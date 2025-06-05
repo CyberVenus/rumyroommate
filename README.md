@@ -1,6 +1,7 @@
 # RU My Roommate
 **Course**: Software Engineering, 14:332:452, Spring 2025 <br>
 **Group**: Cache Me Outside <br>
+**Note**: This is a fork of the original team repo. The features I contributed include: OP-08 API endpoint for saved listings, main page auth use case, backend validation, Jasmine tests
 **Members**:
 - Vladyslav Bartkiv (VladyslavBartkiv), vb425@scarletmail.rutgers.edu
 - Jaron Chen (cheyzejc), jc2929@scarletmail.rutgers.edu
