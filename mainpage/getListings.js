@@ -1,35 +1,26 @@
-const { initiateDBConnection, queryError } = require('../databaseserver/connect_db.js');
-const { host, user, password, database } = require('../databasespecs/sqlDatabaseSecrets.js');
-const { useraccounts, userpreferences, createdroommatelistings, savedroommatelistings, matchingnotifications } = require('../databasespecs/sqlDatabaseSpecs.js');
+const { getPool } = require("../src/config/db");
+const { createdroommatelistings } = require("../database/sqlDatabaseSpecs");
 
-const getListings = function (request, response) {
-    let responseMessage = {}, sqlStatement = '';
-    const dbConnection = initiateDBConnection(host, user, password, database);
-
-    try {
-        sqlStatement = `SELECT * FROM ${createdroommatelistings}`;
-        dbConnection.connect(function (error) {
-            if (error) throw error;
-
-            dbConnection.query(sqlStatement, function (error, result) {
-                if (error) { // Unsuccessfuly Query
-                    responseMessage = queryError(error, 'Service Unavailable');
-                    response.status(503).send(responseMessage);
-                }
-                else { // Successful Query
-                    const resultResponse = JSON.stringify(JSON.parse(JSON.stringify(result)));
-                    response.set('content-type', 'application/json');
-                    response.status(200).send(resultResponse);
-                }
-                dbConnection.end();
-            });
-        });
-    }
-    catch (exception) {
-        response.status(500).send('Server Error');
-    }
+/*
+const getListings = async (req, res) => {
+  try {
+    const pool = getPool();
+    const [rows] = await pool.query(`SELECT * FROM ${createdroommatelistings}`);
+    return res.status(200).json(rows);
+  } catch (e) {
+    console.error(e);
+    return res.status(503).json({ error: "Service unavailable" });
+  }
 };
 
-module.exports = {
-    getListings
-};
+module.exports = { getListings };
+
+*/
+
+async function getListings() {
+  const pool = getPool();
+  const [rows] = await pool.query(`SELECT * FROM ${createdroommatelistings}`);
+  return rows; // ✅ returns array (empty is fine)
+}
+
+module.exports = { getListings };

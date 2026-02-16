@@ -1,0 +1,96 @@
+<form id="registerForm">
+  <h4>Create Account</h4>
+
+  <label>Rutgers Email (NetID)</label>
+  <input id="netid" type="email" required placeholder="abc123@rutgers.edu" />
+
+  <label>Password</label>
+  <input id="password" type="password" required />
+
+  <label>Real Name (optional)</label>
+  <input id="realname" type="text" />
+
+  <label>Age (optional, must be 18+)</label>
+  <input id="age" type="number" min="18" />
+
+  <details>
+    <summary>Optional Preferences</summary>
+
+    <label>Gender</label>
+    <select id="gender">
+      <option value="">(none)</option>
+      <option value="M">M</option>
+      <option value="F">F</option>
+      <option value="O">O</option>
+      <option value="N">N</option>
+    </select>
+
+    <label>Major</label>
+    <input id="major" type="text" placeholder="SOE / SAS / ..." />
+
+    <label>Cleanliness (1-10)</label>
+    <input id="cleanliness" type="number" min="1" max="10" />
+
+    <label>Noise tolerance (1-10)</label>
+    <input id="noisetolerance" type="number" min="1" max="10" />
+  </details>
+
+  <button type="submit">Register</button>
+
+  <div id="message"></div>
+</form>
+
+<script>
+  document
+    .getElementById("registerForm")
+    .addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      // Grab values
+      const netid = document.getElementById("netid").value.trim();
+      const password = document.getElementById("password").value;
+
+      const realname = document.getElementById("realname").value.trim();
+      const age = document.getElementById("age").value;
+
+      const gender = document.getElementById("gender").value;
+      const major = document.getElementById("major").value.trim();
+      const cleanliness = document.getElementById("cleanliness").value;
+      const noisetolerance = document.getElementById("noisetolerance").value;
+
+      // Build payload (send empty strings as null-ish)
+      const payload = {
+        netid,
+        password,
+        realname: realname || null,
+        age: age === "" ? null : Number(age),
+
+        gender: gender || null,
+        major: major || null,
+        cleanliness: cleanliness === "" ? null : Number(cleanliness),
+        noisetolerance: noisetolerance === "" ? null : Number(noisetolerance),
+      };
+
+      try {
+        const res = await fetch("/api/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          document.getElementById("message").innerHTML =
+            `<div style="color:green;">${data.message}</div>`;
+          setTimeout(() => (window.location.href = "/login"), 1000);
+        } else {
+          document.getElementById("message").innerHTML =
+            `<div style="color:red;">${data.error}</div>`;
+        }
+      } catch (err) {
+        document.getElementById("message").innerHTML =
+          `<div style="color:red;">Network/server error</div>`;
+      }
+    });
+</script>
