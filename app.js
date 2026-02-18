@@ -394,11 +394,28 @@ app.post("/api/update-preferences", async (req, res) => {
   }
 });
 
-app.get("/api/user-data", (req, res) => {
-  if (!req.session.user) {
-    return res.status(401).json({ error: "Not authenticated." });
+app.get("/api/user-data", async (req, res) => {
+  try {
+    if (!req.session.user) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+
+    const netid = req.session.user.netid;
+
+    const [rows] = await getPool().query(
+      "SELECT netid, realname FROM useraccounts WHERE netid = ?",
+      [netid],
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.json(rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
   }
-  res.json(req.session.user);
 });
 
 app.post("/api/logout", (req, res) => {

@@ -130,8 +130,8 @@
             return;
           }
           const userData = await response.json();
-          document.getElementById("username").textContent = userData.username;
-          document.getElementById("netId").textContent = userData.netId;
+          document.getElementById("username").textContent = userData.realname;
+          document.getElementById("netId").textContent = userData.netid;
 
           const preferences = userData.preferences || {};
           document.getElementById("preferences").value = JSON.stringify(

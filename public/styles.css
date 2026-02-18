@@ -1,1236 +1,1271 @@
 :root {
-    --rutgers-red: #CC0033;
-    --dark-gray: #2C2C2C;
-    --light-gray: #6c757d;
+  --rutgers-red: #cc0033;
+  --dark-gray: #2c2c2c;
+  --light-gray: #6c757d;
 }
 
 body {
-    background-color: #ffffff;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: #ffffff;
+  font-family:
+    "Inter",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
+  padding-top: 72px;
 }
 
 .navbar {
-    background: #ffffff;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    padding: 1.2rem 0;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    z-index: 1030;
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  padding: 1.2rem 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1030;
 }
 
 .navbar .container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .navbar-nav .nav-link {
-    color: var(--dark-gray) !important;
-    font-weight: 500;
-    letter-spacing: 0.3px;
-    transition: color 0.5s ease;
-    padding: 0.5rem 1rem;
-    margin: 0 0.2rem;
+  color: var(--dark-gray) !important;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  transition: color 0.5s ease;
+  padding: 0.5rem 1rem;
+  margin: 0 0.2rem;
 }
 
 .navbar-nav .nav-link:hover {
-    color: var(--rutgers-red) !important;
+  color: var(--rutgers-red) !important;
 }
 
 .navbar-nav .nav-link.active {
-    color: var(--rutgers-red) !important;
-    font-weight: bold;
+  color: var(--rutgers-red) !important;
+  font-weight: bold;
 }
 
 .navbar-brand {
-    padding: 0;
-    margin: 0;
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
+  padding: 0;
+  margin: 0;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .navbar-brand img {
-    height: 45px;
-    width: auto;
+  height: 45px;
+  width: auto;
 }
 
 .navbar-disclaimer {
-    font-size: 0.9rem;
-    color: var(--light-gray);
-    font-weight: 400;
-    letter-spacing: 0.2px;
-    opacity: 0.8;
-    transition: opacity 0.5s ease;
-    margin-right: auto;
+  font-size: 0.9rem;
+  color: var(--light-gray);
+  font-weight: 400;
+  letter-spacing: 0.2px;
+  opacity: 0.8;
+  transition: opacity 0.5s ease;
+  margin-right: auto;
 }
 
 .navbar-nav {
-    margin-left: auto;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .navbar-nav .nav-link {
-    padding: 0.5rem 1rem;
-    margin: 0;
-    display: flex;
-    align-items: center;
+  padding: 0.5rem 1rem;
+  margin: 0;
+  display: flex;
+  align-items: center;
 }
 
 /* Ensure consistent height for all nav items */
 .navbar-nav .nav-link,
 .profile-link-container {
-    height: 40px;
-    display: flex;
-    align-items: center;
+  height: 40px;
+  display: flex;
+  align-items: center;
 }
 
 @media (max-width: 768px) {
-    .navbar-brand {
-        position: relative;
-        left: 0;
-        transform: none;
-        margin: 0.5rem auto;
-    }
-    
-    .navbar-disclaimer {
-        text-align: center;
-        margin: 0.5rem 0;
-        width: 100%;
-    }
-    
-    .navbar .container {
-        flex-direction: column;
-    }
-    
-    .navbar-nav {
-        gap: 0.25rem;
-    }
-    
-    .profile-link-container {
-        margin-left: 0.5rem;
-    }
-    
-    .profile-link-container img {
-        width: 28px;
-        height: 28px;
-    }
+  .navbar-brand {
+    position: relative;
+    left: 0;
+    transform: none;
+    margin: 0.5rem auto;
+  }
+
+  .navbar-disclaimer {
+    text-align: center;
+    margin: 0.5rem 0;
+    width: 100%;
+  }
+
+  .navbar .container {
+    flex-direction: column;
+  }
+
+  .navbar-nav {
+    gap: 0.25rem;
+  }
+
+  .profile-link-container {
+    margin-left: 0.5rem;
+  }
+
+  .profile-link-container img {
+    width: 28px;
+    height: 28px;
+  }
 }
 
 .card {
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    border: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: none;
 }
 
 .card-header {
-    background-color: #ffffff;
-    border-bottom: 2px solid var(--rutgers-red);
+  background-color: #ffffff;
+  border-bottom: 2px solid var(--rutgers-red);
 }
 
 .form-control:focus {
-    border-color: var(--rutgers-red);
-    box-shadow: 0 0 0 0.25rem rgba(204, 0, 51, 0.25);
+  border-color: var(--rutgers-red);
+  box-shadow: 0 0 0 0.25rem rgba(204, 0, 51, 0.25);
 }
 
 .btn {
-    padding: 0.8rem 2rem;
-    font-weight: 500;
-    letter-spacing: 0.3px;
-    transition: all 0.5s ease;
-    border-radius: 8px;
-    font-size: 1.1rem;
-    backdrop-filter: blur(5px);
+  padding: 0.8rem 2rem;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  transition: all 0.5s ease;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  backdrop-filter: blur(5px);
 }
 
 .btn-primary {
-    background-color: var(--rutgers-red) !important;
-    border-color: var(--rutgers-red) !important;
-    box-shadow: 0 2px 4px rgba(204, 0, 51, 0.2);
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-    z-index: 1;
+  background-color: var(--rutgers-red) !important;
+  border-color: var(--rutgers-red) !important;
+  box-shadow: 0 2px 4px rgba(204, 0, 51, 0.2);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
 }
 
 .btn-primary:hover {
-    background-color: #a30029 !important;
-    border-color: #a30029 !important;
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
+  background-color: #a30029 !important;
+  border-color: #a30029 !important;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
 }
 
 .btn-primary::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transition: 0.5s;
-    z-index: -1;
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: 0.5s;
+  z-index: -1;
 }
 
 .btn-primary:hover::before {
-    left: 100%;
+  left: 100%;
 }
 
 .btn-outline-primary {
-    color: var(--rutgers-red) !important;
-    border-color: var(--rutgers-red) !important;
-    background-color: transparent;
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-    z-index: 1;
+  color: var(--rutgers-red) !important;
+  border-color: var(--rutgers-red) !important;
+  background-color: transparent;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
 }
 
 .btn-outline-primary:hover {
-    color: #ffffff !important;
-    background-color: #007bff;
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0, 123, 255, 0.2);
+  color: #ffffff !important;
+  background-color: #007bff;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 123, 255, 0.2);
 }
 
 .btn-outline-primary::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transition: 0.5s;
-    z-index: -1;
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: 0.5s;
+  z-index: -1;
 }
 
 .btn-outline-primary:hover::before {
-    left: 100%;
+  left: 100%;
 }
 
 .alert {
-    border-radius: 0.25rem;
+  border-radius: 0.25rem;
 }
 
 pre {
-    background-color: #f8f9fa;
-    padding: 1rem;
-    border-radius: 0.25rem;
-    border: 1px solid #dee2e6;
+  background-color: #f8f9fa;
+  padding: 1rem;
+  border-radius: 0.25rem;
+  border: 1px solid #dee2e6;
 }
 
 .form-text {
-    color: #6c757d;
-    font-size: 0.875rem;
+  color: #6c757d;
+  font-size: 0.875rem;
 }
 
 .logo-container {
-    display: none;
+  display: none;
 }
 
 .main-logo-container {
-    text-align: center;
-    margin: 2rem 0;
+  text-align: center;
+  margin: 2rem 0;
 }
 
 .main-logo-container img {
-    max-width: 200px;
-    height: auto;
-    margin-bottom: 1rem;
+  max-width: 200px;
+  height: auto;
+  margin-bottom: 1rem;
 }
 
 .card .card {
-    border: 1px solid rgba(0,0,0,.125);
-    box-shadow: none;
+  border: 1px solid rgba(0, 0, 0, 0.125);
+  box-shadow: none;
 }
 
 .card .card .card-header {
-    background-color: #f8f9fa;
-    border-bottom: 1px solid rgba(0,0,0,.125);
-    padding: 0.75rem 1rem;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+  padding: 0.75rem 1rem;
 }
 
 .card .card .card-header h5 {
-    color: var(--rutgers-red);
-    font-weight: 600;
+  color: var(--rutgers-red);
+  font-weight: 600;
 }
 
 .form-label {
-    font-weight: 500;
+  font-weight: 500;
 }
 
 .form-text ul {
-    padding-left: 1.2rem;
-    margin-top: 0.5rem;
+  padding-left: 1.2rem;
+  margin-top: 0.5rem;
 }
 
 /* Stylish lead text with animation */
 .lead {
-    font-size: 2.4rem;
-    font-weight: 300;
-    color: var(--dark-gray);
-    margin: 0;
-    line-height: 1.6;
-    opacity: 0;
-    animation: fadeIn 1.5s ease-out forwards;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    letter-spacing: -0.5px;
-    text-align: center;
-    width: 100%;
+  font-size: 2.4rem;
+  font-weight: 300;
+  color: var(--dark-gray);
+  margin: 0;
+  line-height: 1.6;
+  opacity: 0;
+  animation: fadeIn 1.5s ease-out forwards;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: -0.5px;
+  text-align: center;
+  width: 100%;
 }
 
 .lead span {
-    color: var(--rutgers-red);
-    font-weight: 400;
-    display: inline-block;
-    margin: 0 0.4rem;
-    position: relative;
-    text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8);
-    transition: all 0.5s ease;
+  color: var(--rutgers-red);
+  font-weight: 400;
+  display: inline-block;
+  margin: 0 0.4rem;
+  position: relative;
+  text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8);
+  transition: all 0.5s ease;
 }
 
 .lead span:hover {
-    transform: translateY(-2px);
-    color: #a30029;
+  transform: translateY(-2px);
+  color: #a30029;
 }
 
 .lead span::after {
-    content: "•";
-    color: var(--rutgers-red);
-    opacity: 0.4;
-    margin-left: 0.4rem;
-    font-size: 0.7em;
-    position: relative;
-    top: -0.3em;
-    transition: opacity 0.5s ease;
+  content: "•";
+  color: var(--rutgers-red);
+  opacity: 0.4;
+  margin-left: 0.4rem;
+  font-size: 0.7em;
+  position: relative;
+  top: -0.3em;
+  transition: opacity 0.5s ease;
 }
 
 .lead span:hover::after {
-    opacity: 0.6;
+  opacity: 0.6;
 }
 
 .lead span:last-child::after {
-    content: none;
+  content: none;
 }
 
 @keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(15px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Slideshow Container */
 .slideshow-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
-    overflow: hidden;
-    transform: translateZ(0);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  overflow: hidden;
+  transform: translateZ(0);
 }
 
 .slide {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-size: cover;
-    background-position: center;
-    opacity: 0;
-    transition: opacity 0.5s ease-in-out;
-    transform: scale(1.1);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+  transform: scale(1.1);
 }
 
 .slide.active {
-    opacity: 1;
-    transform: scale(1);
+  opacity: 1;
+  transform: scale(1);
 }
 
 /* Add scroll-based animation */
 .slideshow-container {
-    transform-style: preserve-3d;
-    perspective: 1000px;
+  transform-style: preserve-3d;
+  perspective: 1000px;
 }
 
 .slide {
-    transform-origin: center center;
-    transition: transform 0.3s ease-out, opacity 0.5s ease-in-out;
+  transform-origin: center center;
+  transition:
+    transform 0.3s ease-out,
+    opacity 0.5s ease-in-out;
 }
 
 /* Update the scroll effect */
 .slideshow-container.scrolling-up .slide {
-    transform: translateY(100%) scale(1.1);
+  transform: translateY(100%) scale(1.1);
 }
 
 .slideshow-container.scrolling-up .slide.active {
-    transform: translateY(0) scale(1);
+  transform: translateY(0) scale(1);
 }
 
 .slideshow-container.scrolling-down .slide {
-    transform: translateY(-100%) scale(1.1);
+  transform: translateY(-100%) scale(1.1);
 }
 
 .slideshow-container.scrolling-down .slide.active {
-    transform: translateY(0) scale(1);
+  transform: translateY(0) scale(1);
 }
 
 /* Ensure content stays above slideshow */
 .main-content {
-    position: relative;
-    z-index: 2;
-    padding-top: 0;
-    scroll-behavior: smooth;
-    scroll-timeline: smooth;
+  position: relative;
+  z-index: 2;
+  padding-top: 0;
+  scroll-behavior: smooth;
+  scroll-timeline: smooth;
 }
 
 .content-box {
-    background: rgba(255, 255, 255, 0.95);
-    padding: 3rem;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(10px);
-    margin-top: 8rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 300px;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 3rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  margin-top: 8rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
 }
 
 /* Custom column width for 5 equal columns */
 .col-lg-2-4 {
-    width: 20%;
+  width: 20%;
 }
 
 .campus-box {
-    background: rgba(255, 255, 255, 0.95);
-    padding: 1.5rem;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(10px);
-    height: 100%;
-    transition: all 0.8s ease;
-    display: flex;
-    flex-direction: column;
-    cursor: pointer;
-    transform: translateY(0);
+  background: rgba(255, 255, 255, 0.95);
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  height: 100%;
+  transition: all 0.8s ease;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  transform: translateY(0);
 }
 
 .campus-box:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  transform: translateY(-5px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
 }
 
 .campus-box h3 {
-    color: var(--rutgers-red);
-    font-size: 1.2rem;
-    font-weight: 600;
-    margin-bottom: 0.4rem;
-    text-align: center;
+  color: var(--rutgers-red);
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+  text-align: center;
 }
 
 .campus-box p {
-    color: var(--dark-gray);
-    font-size: 0.85rem;
-    font-weight: 500;
-    margin-bottom: 1rem;
-    opacity: 0.8;
-    text-align: center;
+  color: var(--dark-gray);
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+  opacity: 0.8;
+  text-align: center;
 }
 
 .campus-box ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    flex-grow: 1;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  flex-grow: 1;
 }
 
 .campus-box ul li {
-    color: var(--light-gray);
-    font-size: 0.8rem;
-    margin-bottom: 0.3rem;
-    padding-left: 1.2rem;
-    position: relative;
+  color: var(--light-gray);
+  font-size: 0.8rem;
+  margin-bottom: 0.3rem;
+  padding-left: 1.2rem;
+  position: relative;
 }
 
 .campus-box ul li::before {
-    content: "•";
-    color: var(--rutgers-red);
-    position: absolute;
-    left: 0;
-    opacity: 0.6;
+  content: "•";
+  color: var(--rutgers-red);
+  position: absolute;
+  left: 0;
+  opacity: 0.6;
 }
 
 /* Responsive adjustments */
 @media (max-width: 992px) {
-    .col-lg-2-4 {
-        width: 33.333333%;
-    }
+  .col-lg-2-4 {
+    width: 33.333333%;
+  }
 }
 
 @media (max-width: 768px) {
-    .col-lg-2-4 {
-        width: 100%;
-    }
-    .campus-box {
-        margin-bottom: 1rem;
-    }
+  .col-lg-2-4 {
+    width: 100%;
+  }
+  .campus-box {
+    margin-bottom: 1rem;
+  }
 }
 
 .content-box .mt-4 {
-    margin-top: 2rem !important;
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
+  margin-top: 2rem !important;
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
 }
 
 .content-box .btn {
-    min-width: 120px;
+  min-width: 120px;
 }
 
 /* Campus Information Section Styles */
 .campus-info-title {
-    padding: 2rem;
-    background: rgba(204, 0, 0, 0.1);
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(3px);
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    overflow: hidden;
-    cursor: pointer;
-    transition: all 0.8s ease;
-    transform: translateY(0);
+  padding: 2rem;
+  background: rgba(204, 0, 0, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(3px);
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.8s ease;
+  transform: translateY(0);
 }
 
 .campus-info-title::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-image: url('../images/richard-weeks.jpg');
-    background-size: cover;
-    background-position: center;
-    opacity: 0.6;
-    z-index: 0;
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url("../images/richard-weeks.jpg");
+  background-size: cover;
+  background-position: center;
+  opacity: 0.6;
+  z-index: 0;
 }
 
 .campus-info-title > div {
-    width: 100%;
-    position: relative;
-    z-index: 1;
-    background: rgba(255, 255, 255, 0.6);
-    padding: 1.5rem;
-    border-radius: 8px;
-    backdrop-filter: blur(2px);
+  width: 100%;
+  position: relative;
+  z-index: 1;
+  background: rgba(255, 255, 255, 0.6);
+  padding: 1.5rem;
+  border-radius: 8px;
+  backdrop-filter: blur(2px);
 }
 
 .campus-info-title h2 {
-    color: var(--rutgers-red);
-    font-size: 2rem;
-    font-weight: 600;
-    margin: 0 0 2rem 0;
-    line-height: 1.3;
-    text-align: center;
-    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.95);
+  color: var(--rutgers-red);
+  font-size: 2rem;
+  font-weight: 600;
+  margin: 0 0 2rem 0;
+  line-height: 1.3;
+  text-align: center;
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.95);
 }
 
 .campus-info-title h2 a {
-    color: var(--rutgers-red);
-    transition: all 0.5s ease;
+  color: var(--rutgers-red);
+  transition: all 0.5s ease;
 }
 
 .campus-info-title h2 a:hover {
-    color: #a30029;
-    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.95);
+  color: #a30029;
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.95);
 }
 
 .campus-info-content {
-    padding: 2.5rem;
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(10px);
-    transition: all 0.8s ease;
-    opacity: 0;
-    transform: translateY(30px);
+  padding: 2.5rem;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  transition: all 0.8s ease;
+  opacity: 0;
+  transform: translateY(30px);
 }
 
 .campus-info-content.reveal {
-    opacity: 1;
-    transform: translateY(0);
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .campus-info-content:hover {
-    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
-    transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
 }
 
 .campus-info-content h3 {
-    color: var(--rutgers-red);
-    font-size: 2rem;
-    font-weight: 600;
-    margin-bottom: 2rem;
-    text-align: center;
-    position: relative;
-    padding-bottom: 1rem;
-    letter-spacing: 0.5px;
+  color: var(--rutgers-red);
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 2rem;
+  text-align: center;
+  position: relative;
+  padding-bottom: 1rem;
+  letter-spacing: 0.5px;
 }
 
 .campus-info-content h3::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 80px;
-    height: 3px;
-    background: var(--rutgers-red);
-    border-radius: 2px;
-    opacity: 0.8;
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 3px;
+  background: var(--rutgers-red);
+  border-radius: 2px;
+  opacity: 0.8;
 }
 
 .campus-info-content p {
-    color: var(--dark-gray);
-    font-size: 1.05rem;
-    line-height: 1.8;
-    margin-bottom: 2rem;
-    opacity: 0.9;
-    position: relative;
-    padding-left: 1.5rem;
-    border-left: 2px solid rgba(204, 0, 0, 0.1);
-    transition: all 0.5s ease;
+  color: var(--dark-gray);
+  font-size: 1.05rem;
+  line-height: 1.8;
+  margin-bottom: 2rem;
+  opacity: 0.9;
+  position: relative;
+  padding-left: 1.5rem;
+  border-left: 2px solid rgba(204, 0, 0, 0.1);
+  transition: all 0.5s ease;
 }
 
 .campus-info-content p:hover {
-    border-left: 2px solid rgba(204, 0, 0, 0.3);
-    padding-left: 2rem;
+  border-left: 2px solid rgba(204, 0, 0, 0.3);
+  padding-left: 2rem;
 }
 
 .campus-info-content p:last-child {
-    margin-bottom: 0;
+  margin-bottom: 0;
 }
 
 .residence-halls {
-    text-align: center;
-    max-width: 90%;
-    margin: 0 auto;
-    background: rgba(255, 255, 255, 0.7);
-    padding: 1.5rem;
-    border-radius: 8px;
-    backdrop-filter: blur(2px);
+  text-align: center;
+  max-width: 90%;
+  margin: 0 auto;
+  background: rgba(255, 255, 255, 0.7);
+  padding: 1.5rem;
+  border-radius: 8px;
+  backdrop-filter: blur(2px);
 }
 
 .hall-type {
-    margin-bottom: 2rem;
+  margin-bottom: 2rem;
 }
 
 .hall-type:last-child {
-    margin-bottom: 0;
+  margin-bottom: 0;
 }
 
 .hall-type h4 {
-    color: var(--dark-gray);
-    font-size: 1.1rem;
-    font-weight: 500;
-    margin-bottom: 1rem;
-    opacity: 0.9;
-    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.95);
+  color: var(--dark-gray);
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+  opacity: 0.9;
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.95);
 }
 
 .hall-type ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
 .hall-type ul li {
-    color: var(--dark-gray);
-    font-size: 0.85rem;
-    margin-bottom: 0.5rem;
-    transition: color 0.5s ease;
-    line-height: 1.4;
-    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.95);
+  color: var(--dark-gray);
+  font-size: 0.85rem;
+  margin-bottom: 0.5rem;
+  transition: color 0.5s ease;
+  line-height: 1.4;
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.95);
 }
 
 .hall-type ul li:hover {
-    color: var(--rutgers-red);
+  color: var(--rutgers-red);
 }
 
 @media (max-width: 768px) {
-    .campus-info-title {
-        margin-bottom: 1rem;
-        padding: 1.5rem;
-    }
-    
-    .campus-info-title h2 {
-        font-size: 1.8rem;
-        margin-bottom: 1.5rem;
-    }
-    
-    .hall-type {
-        margin-bottom: 1.5rem;
-    }
-    
-    .hall-type h4 {
-        font-size: 1rem;
-        margin-bottom: 0.8rem;
-    }
-    
-    .hall-type ul li {
-        font-size: 0.8rem;
-        margin-bottom: 0.4rem;
-    }
-    
-    .campus-info-content {
-        padding: 1.5rem;
-    }
-    
-    .campus-info-content h3 {
-        font-size: 1.8rem;
-        margin-bottom: 1.5rem;
-    }
-    
-    .campus-info-content p {
-        font-size: 1rem;
-        line-height: 1.7;
-        margin-bottom: 1.5rem;
-        padding-left: 1rem;
-    }
-    
-    .campus-info-content p:hover {
-        padding-left: 1.2rem;
-    }
+  .campus-info-title {
+    margin-bottom: 1rem;
+    padding: 1.5rem;
+  }
+
+  .campus-info-title h2 {
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .hall-type {
+    margin-bottom: 1.5rem;
+  }
+
+  .hall-type h4 {
+    font-size: 1rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .hall-type ul li {
+    font-size: 0.8rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .campus-info-content {
+    padding: 1.5rem;
+  }
+
+  .campus-info-content h3 {
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .campus-info-content p {
+    font-size: 1rem;
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+    padding-left: 1rem;
+  }
+
+  .campus-info-content p:hover {
+    padding-left: 1.2rem;
+  }
+}
+
+.hero-title {
+  font-weight: 700;
+  font-size: 2.1rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  background: linear-gradient(45deg, var(--rutgers-red), #ff6b6b);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  white-space: nowrap;
+  padding: 0 1.5rem;
+  line-height: 1.2;
 }
 
 html {
-    scroll-behavior: smooth;
-    scroll-padding-top: 100px;
-    scroll-timeline: smooth;
+  scroll-behavior: smooth;
+  scroll-padding-top: 100px;
+  scroll-timeline: smooth;
 }
 
 .campus-info-title:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  transform: translateY(-5px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
 }
 
 /* Footer Styles */
 .footer {
-    background-color: rgba(255, 255, 255, 0.95);
-    border-top: 1px solid rgba(0, 0, 0, 0.1);
-    font-family: 'Inter', sans-serif;
-    font-size: 0.9rem;
-    color: #666;
+  background-color: rgba(255, 255, 255, 0.95);
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  font-family: "Inter", sans-serif;
+  font-size: 0.9rem;
+  color: #666;
 }
 
 .footer a {
-    color: #CC0033;
-    transition: color 0.5s ease;
+  color: #cc0033;
+  transition: color 0.5s ease;
 }
 
 .footer a:hover {
-    color: #990000;
+  color: #990000;
 }
 
 @media (max-width: 768px) {
-    .footer {
-        text-align: center;
-    }
+  .footer {
+    text-align: center;
+  }
 }
 
 /* Custom scroll behavior for section navigation */
 [id$="-description"] {
-    scroll-margin-top: 100px;
-    transition: all 0.8s ease;
-    scroll-behavior: smooth;
-    scroll-timeline: smooth;
+  scroll-margin-top: 100px;
+  transition: all 0.8s ease;
+  scroll-behavior: smooth;
+  scroll-timeline: smooth;
 }
 
 /* Add smooth scroll behavior to all anchor links */
 a[href^="#"] {
-    scroll-behavior: smooth;
-    scroll-timeline: smooth;
+  scroll-behavior: smooth;
+  scroll-timeline: smooth;
 }
 
 /* Update campus box hover effect for smoother transition */
 .campus-box {
-    transition: all 0.8s ease;
-    transform: translateY(0);
+  transition: all 0.8s ease;
+  transform: translateY(0);
 }
 
 .campus-box:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  transform: translateY(-5px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
 }
 
 /* Update campus info title hover effect */
 .campus-info-title {
-    transition: all 0.8s ease;
-    transform: translateY(0);
+  transition: all 0.8s ease;
+  transform: translateY(0);
 }
 
 .campus-info-title:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  transform: translateY(-5px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
 }
 
 /* Update other transitions */
 .navbar-nav .nav-link {
-    transition: color 0.5s ease;
+  transition: color 0.5s ease;
 }
 
 .btn {
-    transition: all 0.5s ease;
+  transition: all 0.5s ease;
 }
 
 .navbar-disclaimer {
-    transition: opacity 0.5s ease;
+  transition: opacity 0.5s ease;
 }
 
 .lead span {
-    transition: all 0.5s ease;
+  transition: all 0.5s ease;
 }
 
 .slide {
-    transition: opacity 0.5s ease-in-out;
+  transition: opacity 0.5s ease-in-out;
 }
 
 .campus-info-content {
-    transition: all 0.8s ease;
+  transition: all 0.8s ease;
 }
 
 .campus-info-content p {
-    transition: all 0.5s ease;
+  transition: all 0.5s ease;
 }
 
 .hall-type ul li {
-    transition: color 0.5s ease;
+  transition: color 0.5s ease;
 }
 
 .footer a {
-    transition: color 0.5s ease;
+  transition: color 0.5s ease;
 }
 
 /* Add JavaScript-based smooth scroll behavior */
 .smooth-scroll {
-    scroll-behavior: smooth;
-    scroll-timeline: smooth;
-    transition: all 0.8s ease;
+  scroll-behavior: smooth;
+  scroll-timeline: smooth;
+  transition: all 0.8s ease;
 }
 
 .campus-title {
-    color: var(--rutgers-red);
-    font-size: 2rem;
-    font-weight: 600;
-    margin-bottom: 1rem;
+  color: var(--rutgers-red);
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
 }
 
 /* Scroll Reveal Animations */
 .scroll-reveal {
-    opacity: 0;
-    transform: translateY(30px);
-    transition: all 1.5s ease;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 1.5s ease;
 }
 
 .scroll-reveal.active {
-    opacity: 1;
-    transform: translateY(0);
+  opacity: 1;
+  transform: translateY(0);
 }
 
 /* Profile Page Styles */
 .profile-card {
-    border: none;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease;
+  border: none;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
 }
 
 .profile-card:hover {
-    transform: translateY(-5px);
+  transform: translateY(-5px);
 }
 
 .profile-picture {
-    position: relative;
-    width: 150px;
-    height: 150px;
-    margin: 0 auto;
+  position: relative;
+  width: 150px;
+  height: 150px;
+  margin: 0 auto;
 }
 
 .profile-picture img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border: 3px solid var(--rutgers-red);
-    padding: 3px;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border: 3px solid var(--rutgers-red);
+  padding: 3px;
 }
 
 .profile-name {
-    color: var(--dark-gray);
-    font-weight: 600;
+  color: var(--dark-gray);
+  font-weight: 600;
 }
 
 .profile-email {
-    font-size: 0.9rem;
+  font-size: 0.9rem;
 }
 
 .profile-stats {
-    border-top: 1px solid #eee;
-    padding-top: 1rem;
+  border-top: 1px solid #eee;
+  padding-top: 1rem;
 }
 
 .profile-stats h6 {
-    color: var(--dark-gray);
-    font-weight: 500;
+  color: var(--dark-gray);
+  font-weight: 500;
 }
 
 .profile-stats small {
-    font-size: 0.8rem;
+  font-size: 0.8rem;
 }
 
 .profile-actions .btn {
-    padding: 0.5rem 1rem;
-    font-size: 0.9rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
 }
 
 .profile-notifications .btn {
-    padding: 0.5rem;
-    position: relative;
+  padding: 0.5rem;
+  position: relative;
 }
 
 .profile-notifications .badge {
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    font-size: 0.7rem;
-    padding: 0.25rem 0.5rem;
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  font-size: 0.7rem;
+  padding: 0.25rem 0.5rem;
 }
 
 .card {
-    border: none;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    margin-bottom: 1.5rem;
+  border: none;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1.5rem;
 }
 
 .card-header {
-    background-color: #fff;
-    border-bottom: 1px solid #eee;
-    padding: 1rem;
+  background-color: #fff;
+  border-bottom: 1px solid #eee;
+  padding: 1rem;
 }
 
 .card-header h5 {
-    color: var(--dark-gray);
-    font-weight: 600;
-    margin: 0;
+  color: var(--dark-gray);
+  font-weight: 600;
+  margin: 0;
 }
 
 .form-label {
-    color: var(--dark-gray);
-    font-weight: 500;
-    margin-bottom: 0.5rem;
+  color: var(--dark-gray);
+  font-weight: 500;
+  margin-bottom: 0.5rem;
 }
 
 /* Add a subtle pulse animation to the buttons */
 @keyframes pulse {
-    0% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(1.05);
-    }
-    100% {
-        transform: scale(1);
-    }
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
-.btn-primary:hover, .btn-outline-primary:hover {
-    animation: pulse 1s infinite;
+.btn-primary:hover,
+.btn-outline-primary:hover {
+  animation: pulse 1s infinite;
 }
 
 /* Profile Dropdown Menu */
 .profile-dropdown {
-    position: absolute;
-    top: calc(100% + 8px);
-    right: 0;
-    width: 280px;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    display: none;
-    z-index: 1000;
-    margin-top: 8px;
-    transition: opacity 0.2s ease;
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 280px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  display: none;
+  z-index: 1000;
+  margin-top: 8px;
+  transition: opacity 0.2s ease;
 }
 
 .profile-link-container {
-    position: relative;
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-    padding: 0.5rem;
-    margin-left: 1rem;  /* Add space between profile and other nav items */
+  position: relative;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 0.5rem;
+  margin-left: 1rem; /* Add space between profile and other nav items */
 }
 
 .profile-link-container img {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid var(--rutgers-red);
-    transition: all 0.3s ease;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--rutgers-red);
+  transition: all 0.3s ease;
 }
 
 .profile-link-container:hover img {
-    transform: scale(1.1);
-    box-shadow: 0 2px 8px rgba(204, 0, 51, 0.2);
+  transform: scale(1.1);
+  box-shadow: 0 2px 8px rgba(204, 0, 51, 0.2);
 }
 
 .profile-link-container:hover .profile-dropdown {
-    display: block;
-    opacity: 1;
+  display: block;
+  opacity: 1;
 }
 
 /* Add a larger invisible area for hover */
 .profile-link-container::after {
-    content: '';
-    position: absolute;
-    top: -10px;
-    right: -10px;
-    bottom: -10px;
-    left: -10px;
-    z-index: 1;
+  content: "";
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  bottom: -10px;
+  left: -10px;
+  z-index: 1;
 }
 
 .profile-dropdown::before {
-    content: '';
-    position: absolute;
-    top: -8px;
-    right: 20px;
-    width: 16px;
-    height: 16px;
-    background: white;
-    transform: rotate(45deg);
-    box-shadow: -2px -2px 4px rgba(0, 0, 0, 0.05);
+  content: "";
+  position: absolute;
+  top: -8px;
+  right: 20px;
+  width: 16px;
+  height: 16px;
+  background: white;
+  transform: rotate(45deg);
+  box-shadow: -2px -2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .profile-dropdown-header {
-    padding: 16px;
-    border-bottom: 1px solid #eee;
-    display: flex;
-    align-items: center;
-    gap: 12px;
+  padding: 16px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .profile-dropdown-header img {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    object-fit: cover;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
 }
 
 .profile-dropdown-header h6 {
-    margin: 0;
-    font-weight: 600;
+  margin: 0;
+  font-weight: 600;
 }
 
 .profile-dropdown-header p {
-    margin: 0;
-    font-size: 0.875rem;
-    color: #666;
+  margin: 0;
+  font-size: 0.875rem;
+  color: #666;
 }
 
 .profile-dropdown-menu {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
 .profile-dropdown-menu li {
-    padding: 12px 16px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    cursor: pointer;
-    transition: background-color 0.2s;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s;
 }
 
 .profile-dropdown-menu li:hover {
-    background-color: #f8f9fa;
+  background-color: #f8f9fa;
 }
 
 .profile-dropdown-menu li i {
-    font-size: 1.1rem;
-    color: #666;
+  font-size: 1.1rem;
+  color: #666;
 }
 
 .profile-dropdown-menu li a {
-    color: #333;
-    text-decoration: none;
-    flex: 1;
+  color: #333;
+  text-decoration: none;
+  flex: 1;
 }
 
 .profile-dropdown-menu li .badge {
-    background-color: #dc3545;
-    color: white;
-    padding: 0.25em 0.6em;
-    border-radius: 10px;
-    font-size: 0.75rem;
+  background-color: #dc3545;
+  color: white;
+  padding: 0.25em 0.6em;
+  border-radius: 10px;
+  font-size: 0.75rem;
 }
 
 .profile-dropdown-footer {
-    padding: 12px 16px;
-    border-top: 1px solid #eee;
-    text-align: center;
+  padding: 12px 16px;
+  border-top: 1px solid #eee;
+  text-align: center;
 }
 
 .profile-dropdown-footer a {
-    color: #dc3545;
-    text-decoration: none;
-    font-weight: 500;
+  color: #dc3545;
+  text-decoration: none;
+  font-weight: 500;
 }
 
 .profile-dropdown-footer a:hover {
-    text-decoration: underline;
+  text-decoration: underline;
 }
 
 /* Add hover delay to prevent accidental closing */
 .profile-link-container:hover .profile-dropdown,
 .profile-dropdown:hover {
-    display: block;
-    opacity: 1;
+  display: block;
+  opacity: 1;
 }
 
 /* Add a small delay before hiding the dropdown */
 .profile-link-container:not(:hover) .profile-dropdown {
-    transition: opacity 0.2s ease 0.2s;
-    opacity: 0;
+  transition: opacity 0.2s ease 0.2s;
+  opacity: 0;
 }
 
 /* Ensure the dropdown stays visible when hovering over menu items */
 .profile-dropdown-menu li:hover,
 .profile-dropdown-footer:hover {
-    background-color: #f8f9fa;
+  background-color: #f8f9fa;
 }
 
 /* Add a subtle animation when the dropdown appears */
 @keyframes dropdownFadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .profile-dropdown {
-    animation: dropdownFadeIn 0.2s ease;
+  animation: dropdownFadeIn 0.2s ease;
 }
 
 /* Profile Page Styles */
 .profile-info-container {
-    padding: 1rem;
+  padding: 1rem;
 }
 
 .profile-section {
-    background: #f8f9fa;
-    border-radius: 12px;
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    transition: transform 0.2s ease;
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease;
 }
 
 .profile-section:hover {
-    transform: translateY(-2px);
+  transform: translateY(-2px);
 }
 
 .section-header {
-    display: flex;
-    align-items: center;
-    margin-bottom: 1.5rem;
-    padding-bottom: 0.75rem;
-    border-bottom: 2px solid #e9ecef;
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid #e9ecef;
 }
 
 .section-header i {
-    font-size: 1.5rem;
-    color: #0d6efd;
-    margin-right: 0.75rem;
+  font-size: 1.5rem;
+  color: #0d6efd;
+  margin-right: 0.75rem;
 }
 
 .section-header h5 {
-    margin: 0;
-    color: #212529;
-    font-weight: 600;
+  margin: 0;
+  color: #212529;
+  font-weight: 600;
 }
 
 .info-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1.25rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.25rem;
 }
 
 .info-item {
-    display: flex;
-    flex-direction: column;
-    padding: 0.75rem;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  padding: 0.75rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .info-label {
-    font-size: 0.875rem;
-    color: #6c757d;
-    margin-bottom: 0.25rem;
-    font-weight: 500;
+  font-size: 0.875rem;
+  color: #6c757d;
+  margin-bottom: 0.25rem;
+  font-weight: 500;
 }
 
 .info-value {
-    font-size: 1rem;
-    color: #212529;
-    font-weight: 500;
+  font-size: 1rem;
+  color: #212529;
+  font-weight: 500;
 }
 
 @media (max-width: 768px) {
-    .info-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .profile-section {
-        padding: 1rem;
-    }
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-section {
+    padding: 1rem;
+  }
 }
 
 /* Housing Options Box */
 .housing-options-box {
-    background: white;
-    border-radius: 12px;
-    padding: 1.5rem;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    transition: transform 0.2s ease;
-    margin-bottom: 2rem;
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease;
+  margin-bottom: 2rem;
 }
 
 .housing-options-box:hover {
-    transform: translateY(-2px);
-} 
+  transform: translateY(-2px);
+}
