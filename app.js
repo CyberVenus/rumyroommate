@@ -248,7 +248,7 @@ app.post("/api/login", async (req, res) => {
 
   try {
     // 3️⃣ Get a connection from the MySQL pool
-    connection = await pool.getConnection();
+    connection = await getPool().getConnection();
 
     // 4️⃣ Query the user by NetID (never query by password)
     const [users] = await connection.query(
