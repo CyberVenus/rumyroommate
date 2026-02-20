@@ -334,7 +334,7 @@ app.post("/api/update-preferences", async (req, res) => {
   let connection;
 
   try {
-    connection = await pool.getConnection();
+    connection = await getPool().getConnection();
 
     // 3️⃣ Update all fields at once
     await connection.query(
@@ -400,18 +400,23 @@ app.get("/api/user-data", async (req, res) => {
       return res.status(401).json({ error: "Not authenticated" });
     }
 
-    const netid = req.session.user.netid;
+    const { userid, netid, realname, age } = req.session.user;
 
-    const [rows] = await getPool().query(
-      "SELECT netid, realname FROM useraccounts WHERE netid = ?",
-      [netid],
+    // Pull preferences
+    const [prefRows] = await getPool().query(
+      "SELECT * FROM userpreferences WHERE userid = ?",
+      [userid],
     );
 
-    if (rows.length === 0) {
-      return res.status(404).json({ error: "User not found" });
-    }
+    const preferences = prefRows[0] || {};
 
-    res.json(rows[0]);
+    return res.json({
+      userid,
+      netid,
+      realname,
+      age,
+      preferences,
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Server error" });

@@ -124,7 +124,9 @@
       // Check if user is logged in
       async function checkAuth() {
         try {
-          const response = await fetch("/api/user-data");
+          const response = await fetch("/api/user-data", {
+            credentials: "include",
+          });
           if (!response.ok) {
             window.location.href = "/login";
             return;
@@ -149,21 +151,35 @@
         .getElementById("preferencesForm")
         .addEventListener("submit", async (e) => {
           e.preventDefault();
-          const preferences = document.getElementById("preferences").value;
+
+          // 1) Read and parse JSON from textarea
+          let prefs;
+          try {
+            prefs = JSON.parse(
+              document.getElementById("preferences").value || "{}",
+            );
+          } catch (err) {
+            alert("Invalid JSON. Fix formatting before saving.");
+            return;
+          }
+
+          // 2) Never trust client-sent userid
+          delete prefs.userid;
 
           try {
+            // 3) Send fields at top level so backend destructuring works
             const response = await fetch("/api/update-preferences", {
               method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({ preferences }),
+              credentials: "include",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(prefs),
             });
 
             const data = await response.json();
+
             if (response.ok) {
               alert("Preferences updated successfully!");
-              checkAuth(); // Refresh the display
+              checkAuth();
             } else {
               alert(data.error || "Error updating preferences");
             }
