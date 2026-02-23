@@ -1,0 +1,53 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container">
+    <div class="navbar-disclaimer">RU Roommate Finder</div>
+
+    <a class="navbar-brand" href="/">
+      <img src="images/ru-my-roommate-logo.png" alt="RU My Roommate" />
+    </a>
+
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarNav"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item" data-auth="logged-out">
+          <a class="nav-link" href="/login" data-route="login">Login</a>
+        </li>
+        <li class="nav-item" data-auth="logged-out">
+          <a class="nav-link" href="/register" data-route="register"
+            >Register</a
+          >
+        </li>
+
+        <li class="nav-item d-flex align-items-center" data-auth="logged-in">
+          <a class="nav-link" href="/profile" data-route="profile">Profile</a>
+          <a href="/profile" class="ms-1">
+            <img
+              src="images/default-profile.png"
+              alt="Profile Picture"
+              class="rounded-circle"
+              style="width: 32px; height: 32px; object-fit: cover"
+            />
+          </a>
+        </li>
+
+        <li class="nav-item" data-auth="logged-in">
+          <a class="nav-link" href="/dashboard" data-route="dashboard"
+            >Dashboard</a
+          >
+        </li>
+
+        <li class="nav-item" data-auth="logged-in">
+          <a class="nav-link" href="#" id="logoutBtn">Logout</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>

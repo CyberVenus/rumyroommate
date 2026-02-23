@@ -21,50 +21,8 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <div class="container">
-        <div class="navbar-disclaimer">RU Roommate Finder</div>
-        <a class="navbar-brand mx-auto" href="/">
-          <img src="images/ru-my-roommate-logo.png" alt="RU My Roommate" />
-        </a>
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNav"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav ms-auto">
-            <li class="nav-item">
-              <a class="nav-link" href="/login">Login</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/register">Register</a>
-            </li>
-            <li class="nav-item d-flex align-items-center">
-              <a class="nav-link" href="/profile#profile">Profile</a>
-              <a href="/profile#profile" class="ms-1">
-                <img
-                  src="images/default-profile.png"
-                  alt="Profile Picture"
-                  class="rounded-circle"
-                  style="width: 32px; height: 32px; object-fit: cover"
-                />
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link active" href="/dashboard">Dashboard</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#" id="logoutBtn">Logout</a>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
-
+    <div id="navbarMount"></div>
+    t>
     <div class="container mt-5">
       <div class="row">
         <div class="col-md-8 offset-md-2">
@@ -109,50 +67,57 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/navbar.js"></script>
     <script>
-      // Check for existing profile picture on page load
-      const savedProfilePic = localStorage.getItem("userProfilePic");
-      if (savedProfilePic) {
-        const profilePics = document.querySelectorAll(
-          'img[alt="Profile Picture"]',
-        );
-        profilePics.forEach((pic) => {
-          pic.src = savedProfilePic;
-        });
-      }
+      // -----------------------------------------------------------
+      // Main page load logic
+      // WHY:
+      // We wait for navbar to load AND determine auth state
+      // before rendering dashboard data.
+      // -----------------------------------------------------------
+      (async () => {
+        // 1) Load navbar and get user session info
+        const user = await loadNavbar("dashboard");
 
-      // Check if user is logged in
-      async function checkAuth() {
-        try {
-          const response = await fetch("/api/user-data", {
-            credentials: "include",
-          });
-          if (!response.ok) {
-            window.location.href = "/login";
-            return;
-          }
-          const userData = await response.json();
-          document.getElementById("username").textContent = userData.realname;
-          document.getElementById("netId").textContent = userData.netid;
-
-          const preferences = userData.preferences || {};
-          document.getElementById("preferences").value = JSON.stringify(
-            preferences,
-            null,
-            2,
-          );
-        } catch (error) {
+        // 2) If no user → redirect to login
+        // WHY:
+        // Prevent unauthorized access to dashboard page.
+        if (!user) {
           window.location.href = "/login";
+          return;
         }
-      }
 
-      // Update preferences
+        // 3) Populate user info on dashboard
+        // WHY:
+        // We already have user data from loadNavbar.
+        // No need to fetch again.
+        document.getElementById("username").textContent =
+          user.realname || user.netid;
+
+        document.getElementById("netId").textContent = user.netid;
+
+        // 4) Populate preferences textarea
+        // WHY:
+        // Preferences may be null in DB.
+        // We default to {} to prevent JSON errors.
+        const preferences = user.preferences || {};
+
+        document.getElementById("preferences").value = JSON.stringify(
+          preferences,
+          null,
+          2,
+        );
+      })();
+
+      // -----------------------------------------------------------
+      // Preferences form submission
+      // -----------------------------------------------------------
       document
         .getElementById("preferencesForm")
         .addEventListener("submit", async (e) => {
           e.preventDefault();
 
-          // 1) Read and parse JSON from textarea
+          // 1) Parse JSON safely
           let prefs;
           try {
             prefs = JSON.parse(
@@ -163,11 +128,12 @@
             return;
           }
 
-          // 2) Never trust client-sent userid
+          // 2) Never allow client to override userid
+          // WHY:
+          // Security principle: never trust client.
           delete prefs.userid;
 
           try {
-            // 3) Send fields at top level so backend destructuring works
             const response = await fetch("/api/update-preferences", {
               method: "POST",
               credentials: "include",
@@ -179,7 +145,19 @@
 
             if (response.ok) {
               alert("Preferences updated successfully!");
-              checkAuth();
+
+              // Refresh user data visually
+              // WHY:
+              // Ensures dashboard reflects updated DB values.
+              const refreshedUser = await fetch("/api/user-data", {
+                credentials: "include",
+              }).then((r) => r.json());
+
+              document.getElementById("preferences").value = JSON.stringify(
+                refreshedUser.preferences || {},
+                null,
+                2,
+              );
             } else {
               alert(data.error || "Error updating preferences");
             }
@@ -187,22 +165,6 @@
             alert("Error updating preferences");
           }
         });
-
-      // Logout
-      document
-        .getElementById("logoutBtn")
-        .addEventListener("click", async (e) => {
-          e.preventDefault();
-          try {
-            await fetch("/api/logout", { method: "POST" });
-            window.location.href = "/login";
-          } catch (error) {
-            alert("Error logging out");
-          }
-        });
-
-      // Initial load
-      checkAuth();
     </script>
   </body>
 </html>
