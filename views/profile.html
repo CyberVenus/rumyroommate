@@ -21,74 +21,7 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <div class="container">
-        <div class="navbar-disclaimer">RU Roommate Finder</div>
-        <a class="navbar-brand mx-auto" href="/">
-          <img src="images/ru-my-roommate-logo.png" alt="RU My Roommate" />
-        </a>
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNav"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav ms-auto">
-            <li class="nav-item">
-              <a class="nav-link" href="/login">Login</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/register">Register</a>
-            </li>
-            <li class="nav-item profile-link-container">
-              <a class="nav-link active" href="/profile">
-                <img
-                  src="images/default-profile.png"
-                  alt="Profile Picture"
-                  class="rounded-circle"
-                  style="width: 32px; height: 32px; object-fit: cover"
-                />
-              </a>
-              <div class="profile-dropdown">
-                <div class="profile-dropdown-header">
-                  <img src="images/default-profile.png" alt="Profile Picture" />
-                  <div>
-                    <h6 id="dropdownName">Register Now!</h6>
-                    <p id="dropdownNetId">Create your account</p>
-                  </div>
-                </div>
-                <ul class="profile-dropdown-menu">
-                  <li>
-                    <i class="bi bi-person"></i>
-                    <a href="/profile">View Profile</a>
-                  </li>
-                  <li>
-                    <i class="bi bi-envelope"></i>
-                    <a href="/messages">Messages</a>
-                    <span class="badge">3</span>
-                  </li>
-                  <li>
-                    <i class="bi bi-bell"></i>
-                    <a href="/notifications">Notifications</a>
-                    <span class="badge">5</span>
-                  </li>
-                  <li>
-                    <i class="bi bi-gear"></i>
-                    <a href="/settings">Settings</a>
-                  </li>
-                </ul>
-                <div class="profile-dropdown-footer">
-                  <a href="/register">Sign Up</a>
-                </div>
-              </div>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
+    <div id="navbarMount"></div>
 
     <div class="container mt-5">
       <div class="row">
@@ -157,6 +90,55 @@
                         >Not specified</span
                       >
                     </div>
+                    <div class="info-item">
+                      <span class="info-label">Religion</span>
+                      <span class="info-value" id="religion"
+                        >Not specified</span
+                      >
+                    </div>
+                    <div class="info-item">
+                      <span class="info-label">Cleanliness</span>
+                      <span class="info-value" id="cleanliness"
+                        >Not specified</span
+                      >
+                    </div>
+                    <div class="info-item">
+                      <span class="info-label">Noise Tolerance</span>
+                      <span class="info-value" id="noisetolerance"
+                        >Not specified</span
+                      >
+                    </div>
+                    <div class="info-item">
+                      <span class="info-label">Room Budget</span>
+                      <span class="info-value" id="roombudget"
+                        >Not specified</span
+                      >
+                    </div>
+                    <!-- Race preference shouldnt be displayed publically. BUT allowed to be filtered when searching. No outright rascism. But optionality and functionality -->
+                    <div class="info-item">
+                      <span class="info-label">Smoking?</span>
+                      <span class="info-value" id="prefsmoking"
+                        >Not specified</span
+                      >
+                    </div>
+                    <div class="info-item">
+                      <span class="info-label">Drinking?</span>
+                      <span class="info-value" id="prefdrinking"
+                        >Not specified</span
+                      >
+                    </div>
+                    <div class="info-item">
+                      <span class="info-label">Sleep by</span>
+                      <span class="info-value" id="sleepstarttime"
+                        >Not specified</span
+                      >
+                    </div>
+                    <div class="info-item">
+                      <span class="info-label">Awake by</span>
+                      <span class="info-value" id="sleependtime"
+                        >Not specified</span
+                      >
+                    </div>
                   </div>
                 </div>
 
@@ -182,7 +164,7 @@
                 </div>
               </div>
 
-              <div class="text-center mt-4">
+              <div class="text-center mt-4" id="registerCta">
                 <a href="/register" class="btn btn-primary">Register Now!</a>
               </div>
             </div>
@@ -214,18 +196,25 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 
+    <script src="/js/navbar.js"></script>
+
     <script>
-      async function loadProfile() {
+      (async () => {
         try {
-          const res = await fetch("/api/user-data", { credentials: "include" });
-          if (!res.ok) {
+          // 1) Load navbar and get user session info
+          // WHY: navbar.js becomes the single source of truth for auth state.
+          const user = await loadNavbar("profile");
+
+          // 2) If no user → redirect to login
+          // WHY: prevents unauthorized access to the profile page.
+          if (!user) {
             window.location.href = "/login";
             return;
           }
-
-          const user = await res.json();
-
-          // ✅ Use consistent keys from API
+          const registerCta = document.getElementById("registerCta");
+          if (registerCta) registerCta.style.display = "none";
+          // 3) Populate profile fields from the user object
+          // WHY: no extra /api/user-data call; avoids duplicate fetch + timing issues.
           document.getElementById("profileName").textContent =
             user.realname ?? "";
           document.getElementById("profileNetId").textContent =
@@ -239,7 +228,8 @@
           document.getElementById("profileCampus").textContent =
             user.preferred_campus ?? "-";
 
-          // ✅ preferences (use what API returns if available)
+          // 4) Render preferences (safe defaults if missing)
+          // WHY: preferences can be null/undefined depending on DB.
           const p = user.preferences || {};
           document.getElementById("gender").textContent =
             p.gender || "Not specified";
@@ -249,30 +239,49 @@
             p.prefrace || "Not specified";
           document.getElementById("religion").textContent =
             p.prefreligion || "Not specified";
-          // ...and so on
 
-          // ✅ dropdown
+          document.getElementById("cleanliness").textContent =
+            p.cleanliness || "Not specified";
+          document.getElementById("noisetolerance").textContent =
+            p.noisetolerance || "Not specified";
+
+          document.getElementById("roombudget").textContent =
+            p.roombudget || "Not specified";
+          document.getElementById("prefsmoking").textContent =
+            p.prefsmoking || "Not specified";
+          document.getElementById("prefdrinking").textContent =
+            p.prefdrinking || "Not specified";
+          document.getElementById("sleepstarttime").textContent =
+            p.sleepstarttime || "Not specified";
+          document.getElementById("sleependtime").textContent =
+            p.sleependtime || "Not specified";
+
+          // ...continue the same pattern for the rest
+
+          // 5) Profile picture sync (optional)
+          // WHY: ensures profile page reflects localStorage; navbar.js may already do this.
+          const savedProfilePic = localStorage.getItem("userProfilePic");
+          if (savedProfilePic) {
+            document
+              .querySelectorAll('img[alt="Profile Picture"]')
+              .forEach((pic) => {
+                pic.src = savedProfilePic;
+              });
+          }
+
+          // 6) Optional: dropdown fields if they exist on this page
+          // WHY: avoid null crashes if the page doesn't include these elements.
           const dropdownName = document.getElementById("dropdownName");
           const dropdownNetId = document.getElementById("dropdownNetId");
           if (dropdownName)
             dropdownName.textContent = user.realname ?? "Account";
           if (dropdownNetId) dropdownNetId.textContent = user.netid ?? "";
         } catch (err) {
-          console.error("Profile load failed.", err);
+          console.error("Profile init failed:", err);
+          // Fail closed: if auth or navbar loading fails, redirect.
+          window.location.href = "/login";
         }
-      }
-
-      // Profile picture (keep this)
-      const savedProfilePic = localStorage.getItem("userProfilePic");
-      if (savedProfilePic) {
-        document
-          .querySelectorAll('img[alt="Profile Picture"]')
-          .forEach((pic) => {
-            pic.src = savedProfilePic;
-          });
-      }
-
-      loadProfile();
+      })();
     </script>
   </body>
 </html>

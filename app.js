@@ -59,10 +59,23 @@ app.use(
   }),
 );
 
-// Validate Rutgers NetID format (Email form or what?)
-function validateNetId(netId) {
-  const netIdRegex = /^[a-zA-Z0-9._%+-]+@(?:scarletmail\.)?rutgers\.edu$/;
-  return netIdRegex.test(netId);
+// function validateNetId(netId) {
+//   const netIdRegex = /^[a-zA-Z0-9._%+-]+@(?:scarletmail\.)?rutgers\.edu$/;
+//   return netIdRegex.test(netId);
+// }
+
+function validateNetId(email) {
+  if (typeof email !== "string") return false;
+
+  const trimmed = email.trim();
+
+  // basic safety limits (RFC allows 254 total; 320 gives you breathing room)
+  if (trimmed.length < 3 || trimmed.length > 254) return false;
+
+  // reasonably permissive email pattern
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+  return emailRegex.test(trimmed);
 }
 
 // Routes

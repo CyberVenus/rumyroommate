@@ -45,3 +45,7 @@ CREATE TABLE `useraccounts` (
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
 -- Dump completed on 2025-04-08 20:44:23
+ALTER TABLE useraccounts
+  MODIFY netid VARCHAR(254) NOT NULL;
+
+  /*Do i put thisat the bottom of my useraccounts sql file? Why do i have to alter the table? cant I just edit the sql to `netid` varchar(254) NOT NULL?
