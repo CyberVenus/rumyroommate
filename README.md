@@ -1,24 +1,23 @@
-# RU My Roommate
+# 🏠 RU My Roommate
 
 A full-stack roommate matching platform for Rutgers students.
 
 Originally developed as a Software Engineering course project (14:332:452, Spring 2025).  
-Now actively maintained and extended into a fully functional system.
+Now actively maintained and extended into a working, continuously evolving application.
 
 ---
 
 ## 🚀 Project Status
 
-This project began as a group academic prototype and is currently being engineered into a complete, production-ready application.
+This project has evolved from an academic prototype into an actively developed system focused on backend architecture, data handling, and application reliability.
 
-The original system included partially implemented use cases and disconnected components. My current work focuses on:
+Current development focuses on:
 
-- Converting documented use cases into fully integrated features
-- Refactoring backend architecture
-- Improving authentication flow
-- Standardizing naming conventions
+- Refactoring backend architecture for modularity and scalability
+- Designing and implementing production-ready API endpoints
+- Improving authentication flow and session handling
+- Standardizing naming conventions and data models
 - Fixing UI/UX inconsistencies
-- Improving maintainability and scalability
 - Expanding backend validation and test coverage
 
 This is an active development project.
@@ -31,7 +30,7 @@ RU My Roommate is a preference-based roommate matchmaking system designed to:
 
 - Match students based on lifestyle preferences
 - Allow listing creation and discovery
-- Enable saving roommate listings
+- Allow users to save annd manage roommate listings
 - Provide preference-driven filtering
 - Authenticate users via Rutgers NetID
 
@@ -60,9 +59,10 @@ RU My Roommate is a preference-based roommate matchmaking system designed to:
 
 ---
 
-## 🔧 Major Improvements Since Course Version
+## 🔧 Key Contributions
 
-- Refactored backend to use modular routing
-- Fixed authentication bugs (NetID consistency)
-- Implemented OP-08: Saved Listings API endpoint
-- Improved server-side validation
+- Refactored backend to use modular routing and centralized database access
+- Designed and implemented API endpoints (including Saved Listings feature)
+- Fixed authentication bugs (NetID handling)
+- Improved server-side validation and data integrity
+- Debugged and resolved system-level issues across authentication and data flow
