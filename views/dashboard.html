@@ -30,6 +30,8 @@
             <div class="card-header">
               <h3 class="text-center">Welcome, <span id="username"></span>!</h3>
             </div>
+
+            <!-- Account Details Section -->
             <div class="card-body">
               <div class="mb-4">
                 <h4>Account Details</h4>
@@ -37,6 +39,7 @@
                 <p><strong>Account Status:</strong> Active</p>
               </div>
 
+              <!-- Preferences Section -->
               <div class="card mb-4">
                 <div class="card-header">
                   <h5 class="card-title mb-0">Your Preferences</h5>
@@ -100,7 +103,7 @@
         // WHY:
         // Preferences may be null in DB.
         // We default to {} to prevent JSON errors.
-        const preferences = user.preferences || {};
+        const preferences = user || {};
 
         document.getElementById("preferences").value = JSON.stringify(
           preferences,
@@ -153,8 +156,10 @@
                 credentials: "include",
               }).then((r) => r.json());
 
+              const { userid, ...editableUserData } = refreshedUser;
+
               document.getElementById("preferences").value = JSON.stringify(
-                refreshedUser.preferences || {},
+                editableUserData,
                 null,
                 2,
               );

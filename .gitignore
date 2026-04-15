@@ -1,3 +1,4 @@
 sqlDatabaseSecrets.js
 node_modules/
 .env
+database/dumps/
