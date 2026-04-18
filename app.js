@@ -15,9 +15,6 @@ const listingsRouter = require("./src/routes/listings.routes");
 const app = express();
 const PORT = Number(process.env.PORT || 3000);
 
-app.use("/api/health", healthRouter);
-app.use("/api", listingsRouter);
-
 // Database configuration
 const dbConfig = {
   host: process.env.DB_HOST,
@@ -59,6 +56,8 @@ app.use(
   }),
 );
 
+app.use("/api/health", healthRouter);
+app.use("/api", listingsRouter);
 // function validateNetId(netId) {
 //   const netIdRegex = /^[a-zA-Z0-9._%+-]+@(?:scarletmail\.)?rutgers\.edu$/;
 //   return netIdRegex.test(netId);
@@ -100,6 +99,13 @@ app.get("/dashboard", (req, res) => {
     return res.redirect("/login");
   }
   res.sendFile(path.join(__dirname, "views", "dashboard.html"));
+});
+
+app.get("/create-listing", (req, res) => {
+  if (!req.session.user) {
+    return res.redirect("/login");
+  }
+  res.sendFile(path.join(__dirname, "views", "createlisting.html"));
 });
 
 // Serve preferences page
