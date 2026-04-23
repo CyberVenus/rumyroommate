@@ -64,6 +64,22 @@
                 </div>
               </div>
             </div>
+            <!-- Listings Section -->
+            <div class="card mb-4">
+              <div
+                class="card-header d-flex justify-content-between align-items-center"
+              >
+                <h5 class="card-title mb-0">Recent Listings</h5>
+                <a href="/create-listing" class="btn btn-sm btn-primary"
+                  >Create Listing</a
+                >
+              </div>
+              <div class="card-body">
+                <div id="listingsContainer">
+                  <p class="text-muted mb-0">Loading listings...</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -71,6 +87,61 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/js/navbar.js"></script>
+    <script>
+      function renderListings(listings, currentUserId) {
+        const container = document.getElementById("listingsContainer");
+
+        if (!Array.isArray(listings) || listings.length === 0) {
+          container.innerHTML = `
+        <p class="text-muted mb-0">No listings yet.</p>
+      `;
+          return;
+        }
+
+        container.innerHTML = listings
+          .map((listing) => {
+            const isMine = String(listing.userid) === String(currentUserId);
+
+            return `
+          <div class="card mb-3 shadow-sm">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-start mb-2">
+                <div>
+                  <h6 class="card-title mb-1">
+                    ${listing.address || "No address provided"}
+                  </h6>
+                  <p class="text-muted mb-0">
+                    Posted by ${listing.realname || listing.netid || "Unknown user"}
+                    ${isMine ? '<span class="badge bg-secondary ms-2">Your Listing</span>' : ""}
+                  </p>
+                </div>
+                <small class="text-muted">
+                  ${listing.createtime ? new Date(listing.createtime).toLocaleDateString() : ""}
+                </small>
+              </div>
+
+              <div class="row">
+                <div class="col-md-6 mb-2">
+                  <strong>Campus:</strong> ${listing.campus || "Not specified"}
+                </div>
+                <div class="col-md-6 mb-2">
+                  <strong>Room Type:</strong> ${listing.roomtype || "Not specified"}
+                </div>
+                <div class="col-md-6 mb-2">
+                  <strong>Room Number:</strong> ${listing.roomnumber || "Not specified"}
+                </div>
+                <div class="col-md-6 mb-2">
+                  <strong>Rooms / Roommates:</strong>
+                  ${listing.numrooms ?? "?"} / ${listing.numroommates ?? "?"}
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+          })
+          .join("");
+      }
+    </script>
     <script>
       // -----------------------------------------------------------
       // Main page load logic
@@ -110,6 +181,19 @@
           null,
           2,
         );
+        // 5) Load listings feed
+        try {
+          const listings = await fetch("/api/listings", {
+            credentials: "include",
+          }).then((r) => r.json());
+
+          renderListings(listings, user.userid);
+        } catch (error) {
+          console.error("Failed to load listings:", error);
+          document.getElementById("listingsContainer").innerHTML = `
+            <p class="text-danger mb-0">Failed to load listings.</p>
+          `;
+        }
       })();
 
       // -----------------------------------------------------------

@@ -1,24 +1,50 @@
 const express = require("express");
-const { getListings } = require("../../mainpage/getListings");
+// const { getListings } = require("../../mainpage/getListings");
 const { getPool } = require("../config/db");
-// or wherever you moved it
 
 const router = express.Router();
 
 // GET /api/listings
 router.get("/listings", async (req, res) => {
+  let connection;
+
   try {
-    const listings = await getListings();
-    return res.json(listings);
-  } catch (e) {
-    console.error("Get listings error:", e);
-    return res.status(500).json({ error: "Server error" });
+    connection = await getPool().getConnection();
+
+    const [rows] = await connection.query(
+      `
+      SELECT
+        l.postid,
+        l.userid,
+        l.createtime,
+        l.address,
+        l.campus,
+        l.roomnumber,
+        l.roomtype,
+        l.numrooms,
+        l.numroommates,
+        u.realname,
+        u.netid,
+        u.major
+      FROM createdroommatelistings l
+      JOIN useraccounts u
+        ON l.userid = u.userid
+      ORDER BY l.postid DESC
+      `,
+    );
+
+    return res.json(rows);
+  } catch (error) {
+    console.error("Get listings error:", error);
+    return res.status(500).json({ error: "Failed to fetch listings" });
+  } finally {
+    if (connection) connection.release();
   }
 });
 
 // POST /api/listings
 router.post("/listings", async (req, res) => {
-  if (!req.session.user) {
+  if (!req.session || !req.session.user) {
     return res.status(401).json({ error: "Not authenticated" });
   }
 
