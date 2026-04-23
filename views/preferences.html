@@ -1,169 +1,457 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Set Your Preferences - RU My Roommate</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <nav class="navbar navbar-expand-lg">
-        <div class="container">
-            <div class="navbar-disclaimer">
-                RU Roommate Finder
-            </div>
-            <a class="navbar-brand mx-auto" href="/">
-                <img src="images/ru-my-roommate-logo.png" alt="RU My Roommate">
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/login">Login</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="/register">Register</a>
-                    </li>
-                    <li class="nav-item d-flex align-items-center">
-                        <a class="nav-link" href="/profile#profile">Profile</a>
-                        <a href="/profile#profile" class="ms-1">
-                            <img src="images/default-profile.png" alt="Profile Picture" class="rounded-circle" style="width: 32px; height: 32px; object-fit: cover;">
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Preferences - RU My Roommate</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div id="navbarMount"></div>
 
     <div class="container mt-5">
-        <div class="row">
-            <div class="col-md-8 offset-md-2 text-center mb-5">
-                <div class="logo-container small">
-                    <img src="images/ru-my-roommate-logo.png" alt="RU My Roommate Logo" class="img-fluid">
-                </div>
+      <div class="row">
+        <div class="col-md-8 offset-md-2">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="text-center mb-0">Edit Preferences</h3>
             </div>
-        </div>
-        <div class="row">
-            <div class="col-md-6 offset-md-3">
-                <div class="card shadow-sm">
-                    <div class="card-header">
-                        <h3 class="text-center mb-0" style="color: var(--rutgers-red); font-weight: 600; font-size: 2rem; letter-spacing: 0.5px;">Set Your Preferences</h3>
-                    </div>
-                    <div class="card-body">
-                        <form id="preferencesForm">
-                            <!-- Initial Preferences Section -->
-                            <div class="card mb-4">
-                                <div class="card-header">
-                                    <h5 class="mb-0">Initial Preferences</h5>
-                                </div>
-                                <div class="card-body">
-                                    <div class="mb-3">
-                                        <label for="gender" class="form-label">Gender</label>
-                                        <select class="form-select" id="gender" required>
-                                            <option value="">Select your gender</option>
-                                            <option value="Male">Male</option>
-                                            <option value="Female">Female</option>
-                                            <option value="Other">Other</option>
-                                        </select>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="ethnicity" class="form-label">Ethnicity</label>
-                                        <select class="form-select" id="ethnicity" required>
-                                            <option value="">Select your ethnicity</option>
-                                            <option value="Asian">Asian</option>
-                                            <option value="Black or African American">Black or African American</option>
-                                            <option value="Hispanic or Latino">Hispanic or Latino</option>
-                                            <option value="White or Caucasian">White or Caucasian</option>
-                                            <option value="Native American">Native American</option>
-                                            <option value="Pacific Islander">Pacific Islander</option>
-                                            <option value="Other">Other</option>
-                                        </select>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="major" class="form-label">Major</label>
-                                        <input type="text" class="form-control" id="major" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="year" class="form-label">Year</label>
-                                        <select class="form-select" id="year" required>
-                                            <option value="">Select your year</option>
-                                            <option value="Freshman">Freshman</option>
-                                            <option value="Sophomore">Sophomore</option>
-                                            <option value="Junior">Junior</option>
-                                            <option value="Senior">Senior</option>
-                                            <option value="Graduate Student">Graduate Student</option>
-                                        </select>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="preferred_campus" class="form-label">Preferred Campus</label>
-                                        <select class="form-select" id="preferred_campus" required>
-                                            <option value="">Select your preferred campus</option>
-                                            <option value="Busch">Busch</option>
-                                            <option value="College Avenue">College Avenue</option>
-                                            <option value="Cook/Douglass">Cook/Douglass</option>
-                                            <option value="Livingston">Livingston</option>
-                                            <option value="Off-campus">Off-campus</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
 
-                            <div class="d-grid">
-                                <button type="submit" class="btn btn-primary">Complete Registration</button>
-                            </div>
-                        </form>
-                        <div id="message" class="mt-3"></div>
+            <div class="card-body">
+              <form id="preferencesForm">
+                <div class="card mb-4">
+                  <div class="card-header">
+                    <h5 class="mb-0">Personal Information</h5>
+                  </div>
+                  <div class="card-body">
+                    <div class="mb-3">
+                      <label for="gender" class="form-label">Gender</label>
+                      <input type="text" class="form-control" id="gender" />
                     </div>
+
+                    <div class="mb-3">
+                      <label for="ethnicity" class="form-label"
+                        >Ethnicity</label
+                      >
+                      <input type="text" class="form-control" id="ethnicity" />
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="religion" class="form-label">Religion</label>
+                      <input type="text" class="form-control" id="religion" />
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="major" class="form-label">Major</label>
+                      <input type="text" class="form-control" id="major" />
+                    </div>
+                  </div>
                 </div>
+
+                <div class="card mb-4">
+                  <div class="card-header">
+                    <h5 class="mb-0">Habits</h5>
+                  </div>
+                  <div class="card-body">
+                    <div class="mb-3">
+                      <label for="cleanliness" class="form-label"
+                        >Cleanliness (1-10)</label
+                      >
+                      <input
+                        type="number"
+                        min="1"
+                        max="10"
+                        class="form-control"
+                        id="cleanliness"
+                      />
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="noisetolerance" class="form-label"
+                        >Noise Tolerance (1-10)</label
+                      >
+                      <input
+                        type="number"
+                        min="1"
+                        max="10"
+                        class="form-control"
+                        id="noisetolerance"
+                      />
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="sleephabits" class="form-label"
+                        >Sleep Habits</label
+                      >
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="sleephabits"
+                      />
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="sleepstarttime" class="form-label"
+                        >Sleep Start Time</label
+                      >
+                      <input
+                        type="time"
+                        class="form-control"
+                        id="sleepstarttime"
+                      />
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="sleependtime" class="form-label"
+                        >Sleep End Time</label
+                      >
+                      <input
+                        type="time"
+                        class="form-control"
+                        id="sleependtime"
+                      />
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="studystarttime" class="form-label"
+                        >Study Start Time</label
+                      >
+                      <input
+                        type="time"
+                        class="form-control"
+                        id="studystarttime"
+                      />
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="studyendtime" class="form-label"
+                        >Study End Time</label
+                      >
+                      <input
+                        type="time"
+                        class="form-control"
+                        id="studyendtime"
+                      />
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="sharedstarttime" class="form-label"
+                        >Shared Space Start Time</label
+                      >
+                      <input
+                        type="time"
+                        class="form-control"
+                        id="sharedstarttime"
+                      />
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="sharedendtime" class="form-label"
+                        >Shared Space End Time</label
+                      >
+                      <input
+                        type="time"
+                        class="form-control"
+                        id="sharedendtime"
+                      />
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="smoking" class="form-label"
+                        >Smoking (Y/N)</label
+                      >
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="smoking"
+                        maxlength="1"
+                      />
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="drinking" class="form-label"
+                        >Drinking (Y/N)</label
+                      >
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="drinking"
+                        maxlength="1"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div class="card mb-4">
+                  <div class="card-header">
+                    <h5 class="mb-0">Roommate Preferences</h5>
+                  </div>
+                  <div class="card-body">
+                    <div class="mb-3">
+                      <label for="prefgender" class="form-label"
+                        >Preferred Gender</label
+                      >
+                      <input type="text" class="form-control" id="prefgender" />
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="prefrace" class="form-label"
+                        >Preferred Ethnicity</label
+                      >
+                      <input type="text" class="form-control" id="prefrace" />
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="prefreligion" class="form-label"
+                        >Preferred Religion</label
+                      >
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="prefreligion"
+                      />
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="prefmajor" class="form-label"
+                        >Preferred Major</label
+                      >
+                      <input type="text" class="form-control" id="prefmajor" />
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="prefsmoking" class="form-label"
+                        >Preferred Smoking (Y/N/D)</label
+                      >
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="prefsmoking"
+                        maxlength="1"
+                      />
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="prefdrinking" class="form-label"
+                        >Preferred Drinking (Y/N/D)</label
+                      >
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="prefdrinking"
+                        maxlength="1"
+                      />
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="roombudget" class="form-label"
+                        >Room Budget</label
+                      >
+                      <input
+                        type="number"
+                        class="form-control"
+                        id="roombudget"
+                      />
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="preflowtemp" class="form-label"
+                        >Preferred Low Temp</label
+                      >
+                      <input
+                        type="number"
+                        class="form-control"
+                        id="preflowtemp"
+                      />
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="prefhightemp" class="form-label"
+                        >Preferred High Temp</label
+                      >
+                      <input
+                        type="number"
+                        class="form-control"
+                        id="prefhightemp"
+                      />
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="prefguestfreq" class="form-label"
+                        >Preferred Guest Frequency</label
+                      >
+                      <input
+                        type="number"
+                        class="form-control"
+                        id="prefguestfreq"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div class="d-grid">
+                  <button type="submit" class="btn btn-primary">
+                    Save Preferences
+                  </button>
+                </div>
+              </form>
+
+              <div id="message" class="mt-3"></div>
             </div>
+          </div>
         </div>
+      </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/navbar.js"></script>
     <script>
-        // Check for existing profile picture on page load
-        const savedProfilePic = localStorage.getItem('userProfilePic');
-        if (savedProfilePic) {
-            const profilePic = document.querySelector('img[alt="Profile Picture"]');
-            if (profilePic) {
-                profilePic.src = savedProfilePic;
-            }
+      function setValue(id, value) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.value = value ?? "";
+      }
+
+      (async () => {
+        const user = await loadNavbar("preferences");
+
+        if (!user) {
+          window.location.href = "/login";
+          return;
         }
 
-        // Form submission handler
-        document.getElementById('preferencesForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const gender = document.getElementById('gender').value;
-            const ethnicity = document.getElementById('ethnicity').value;
-            const major = document.getElementById('major').value;
-            const year = document.getElementById('year').value;
-            const preferred_campus = document.getElementById('preferred_campus').value;
+        setValue("gender", user.personal?.gender);
+        setValue("ethnicity", user.personal?.ethnicity);
+        setValue("religion", user.personal?.religion);
+        setValue("major", user.personal?.major);
 
-            // Store the preferences in localStorage
-            const preferences = {
-                gender,
-                ethnicity,
-                major,
-                year,
-                preferred_campus
-            };
-            localStorage.setItem('userPreferences', JSON.stringify(preferences));
+        setValue("cleanliness", user.habits?.cleanliness);
+        setValue("noisetolerance", user.habits?.noisetolerance);
+        setValue("sleephabits", user.habits?.sleephabits);
+        setValue("sleepstarttime", user.habits?.sleepstarttime);
+        setValue("sleependtime", user.habits?.sleependtime);
+        setValue("studystarttime", user.habits?.studystarttime);
+        setValue("studyendtime", user.habits?.studyendtime);
+        setValue("sharedstarttime", user.habits?.sharedstarttime);
+        setValue("sharedendtime", user.habits?.sharedendtime);
+        setValue("smoking", user.habits?.smoking);
+        setValue("drinking", user.habits?.drinking);
 
-            // Show a success message
-            document.getElementById('message').innerHTML = '<div class="alert alert-success">Preferences saved successfully!</div>';
-            
-            // after a short delay redirect to the profile page
-            setTimeout(() => {
-                window.location.href = '/profile';
-            }, 1500);
+        setValue("prefgender", user.roommatePreferences?.prefgender);
+        setValue("prefrace", user.roommatePreferences?.prefrace);
+        setValue("prefreligion", user.roommatePreferences?.prefreligion);
+        setValue("prefmajor", user.roommatePreferences?.prefmajor);
+        setValue("prefsmoking", user.roommatePreferences?.prefsmoking);
+        setValue("prefdrinking", user.roommatePreferences?.prefdrinking);
+        setValue("roombudget", user.roommatePreferences?.roombudget);
+        setValue("preflowtemp", user.roommatePreferences?.preflowtemp);
+        setValue("prefhightemp", user.roommatePreferences?.prefhightemp);
+        setValue("prefguestfreq", user.roommatePreferences?.prefguestfreq);
+      })();
+
+      document
+        .getElementById("preferencesForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const payload = {
+            personal: {
+              gender: document.getElementById("gender").value || null,
+              ethnicity: document.getElementById("ethnicity").value || null,
+              religion: document.getElementById("religion").value || null,
+              major: document.getElementById("major").value || null,
+            },
+            habits: {
+              cleanliness: document.getElementById("cleanliness").value
+                ? Number(document.getElementById("cleanliness").value)
+                : null,
+              noisetolerance: document.getElementById("noisetolerance").value
+                ? Number(document.getElementById("noisetolerance").value)
+                : null,
+              sleephabits: document.getElementById("sleephabits").value || null,
+              sleepstarttime:
+                document.getElementById("sleepstarttime").value || null,
+              sleependtime:
+                document.getElementById("sleependtime").value || null,
+              studystarttime:
+                document.getElementById("studystarttime").value || null,
+              studyendtime:
+                document.getElementById("studyendtime").value || null,
+              sharedstarttime:
+                document.getElementById("sharedstarttime").value || null,
+              sharedendtime:
+                document.getElementById("sharedendtime").value || null,
+              smoking: document.getElementById("smoking").value || null,
+              drinking: document.getElementById("drinking").value || null,
+            },
+            roommatePreferences: {
+              prefgender: document.getElementById("prefgender").value || null,
+              prefrace: document.getElementById("prefrace").value || null,
+              prefreligion:
+                document.getElementById("prefreligion").value || null,
+              prefmajor: document.getElementById("prefmajor").value || null,
+              prefsmoking: document.getElementById("prefsmoking").value || null,
+              prefdrinking:
+                document.getElementById("prefdrinking").value || null,
+              roombudget: document.getElementById("roombudget").value
+                ? Number(document.getElementById("roombudget").value)
+                : null,
+              preflowtemp: document.getElementById("preflowtemp").value
+                ? Number(document.getElementById("preflowtemp").value)
+                : null,
+              prefhightemp: document.getElementById("prefhightemp").value
+                ? Number(document.getElementById("prefhightemp").value)
+                : null,
+              prefguestfreq: document.getElementById("prefguestfreq").value
+                ? Number(document.getElementById("prefguestfreq").value)
+                : null,
+            },
+          };
+
+          const message = document.getElementById("message");
+          message.className = "mt-3 text-muted";
+          message.textContent = "Saving preferences...";
+
+          try {
+            const response = await fetch("/api/update-preferences", {
+              method: "POST",
+              credentials: "include",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(payload),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+              message.className = "mt-3 text-success";
+              message.textContent = "Preferences updated successfully.";
+            } else {
+              message.className = "mt-3 text-danger";
+              message.textContent =
+                data.error || "Failed to update preferences.";
+            }
+          } catch (error) {
+            console.error("Preferences update error:", error);
+            message.className = "mt-3 text-danger";
+            message.textContent = "Server error.";
+          }
         });
     </script>
-</body>
-</html> 
+  </body>
+</html>

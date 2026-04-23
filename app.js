@@ -110,9 +110,11 @@ app.get("/create-listing", (req, res) => {
 
 // Serve preferences page
 app.get("/preferences", (req, res) => {
+  if (!req.session.user) {
+    return res.redirect("/login");
+  }
   res.sendFile(path.join(__dirname, "views", "preferences.html"));
 });
-
 // API endpoints
 app.post("/api/register", async (req, res) => {
   const {

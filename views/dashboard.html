@@ -31,52 +31,21 @@
               <h3 class="text-center">Welcome, <span id="username"></span>!</h3>
             </div>
 
-            <!-- Account Details Section -->
+            <!-- Listings Section -->
             <div class="card-body">
-              <div class="mb-4">
-                <h4>Account Details</h4>
-                <p><strong>NetID:</strong> <span id="netId"></span></p>
-                <p><strong>Account Status:</strong> Active</p>
-              </div>
-
-              <!-- Preferences Section -->
               <div class="card mb-4">
-                <div class="card-header">
-                  <h5 class="card-title mb-0">Your Preferences</h5>
+                <div
+                  class="card-header d-flex justify-content-between align-items-center"
+                >
+                  <h5 class="card-title mb-0">Recent Listings</h5>
+                  <a href="/create-listing" class="btn btn-sm btn-primary"
+                    >Create Listing</a
+                  >
                 </div>
                 <div class="card-body">
-                  <form id="preferencesForm">
-                    <div class="mb-3">
-                      <label for="preferences" class="form-label"
-                        >Your Preferences</label
-                      >
-                      <textarea
-                        class="form-control"
-                        id="preferences"
-                        rows="3"
-                        placeholder="Enter your preferences (e.g., Dark theme, Email notifications, English language)"
-                      ></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary">
-                      Update Preferences
-                    </button>
-                  </form>
-                </div>
-              </div>
-            </div>
-            <!-- Listings Section -->
-            <div class="card mb-4">
-              <div
-                class="card-header d-flex justify-content-between align-items-center"
-              >
-                <h5 class="card-title mb-0">Recent Listings</h5>
-                <a href="/create-listing" class="btn btn-sm btn-primary"
-                  >Create Listing</a
-                >
-              </div>
-              <div class="card-body">
-                <div id="listingsContainer">
-                  <p class="text-muted mb-0">Loading listings...</p>
+                  <div id="listingsContainer">
+                    <p class="text-muted mb-0">Loading listings...</p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -168,19 +137,6 @@
         document.getElementById("username").textContent =
           user.realname || user.netid;
 
-        document.getElementById("netId").textContent = user.netid;
-
-        // 4) Populate preferences textarea
-        // WHY:
-        // Preferences may be null in DB.
-        // We default to {} to prevent JSON errors.
-        const preferences = user || {};
-
-        document.getElementById("preferences").value = JSON.stringify(
-          preferences,
-          null,
-          2,
-        );
         // 5) Load listings feed
         try {
           const listings = await fetch("/api/listings", {
@@ -195,65 +151,6 @@
           `;
         }
       })();
-
-      // -----------------------------------------------------------
-      // Preferences form submission
-      // -----------------------------------------------------------
-      document
-        .getElementById("preferencesForm")
-        .addEventListener("submit", async (e) => {
-          e.preventDefault();
-
-          // 1) Parse JSON safely
-          let prefs;
-          try {
-            prefs = JSON.parse(
-              document.getElementById("preferences").value || "{}",
-            );
-          } catch (err) {
-            alert("Invalid JSON. Fix formatting before saving.");
-            return;
-          }
-
-          // 2) Never allow client to override userid
-          // WHY:
-          // Security principle: never trust client.
-          delete prefs.userid;
-
-          try {
-            const response = await fetch("/api/update-preferences", {
-              method: "POST",
-              credentials: "include",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(prefs),
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-              alert("Preferences updated successfully!");
-
-              // Refresh user data visually
-              // WHY:
-              // Ensures dashboard reflects updated DB values.
-              const refreshedUser = await fetch("/api/user-data", {
-                credentials: "include",
-              }).then((r) => r.json());
-
-              const { userid, ...editableUserData } = refreshedUser;
-
-              document.getElementById("preferences").value = JSON.stringify(
-                editableUserData,
-                null,
-                2,
-              );
-            } else {
-              alert(data.error || "Error updating preferences");
-            }
-          } catch (error) {
-            alert("Error updating preferences");
-          }
-        });
     </script>
   </body>
 </html>
