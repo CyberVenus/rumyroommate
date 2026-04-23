@@ -25,32 +25,12 @@
 
     <div class="container mt-5">
       <div class="row">
-        <div class="col-md-8 offset-md-2 text-center mb-5">
-          <div class="logo-container small">
-            <img
-              src="images/ru-my-roommate-logo.png"
-              alt="RU My Roommate Logo"
-              class="img-fluid"
-            />
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-md-6 offset-md-3">
+        <div class="col-md-8 offset-md-2">
           <div class="card shadow-sm">
             <div class="card-header">
-              <h3
-                class="text-center mb-0"
-                style="
-                  color: var(--rutgers-red);
-                  font-weight: 600;
-                  font-size: 2rem;
-                  letter-spacing: 0.5px;
-                "
-              >
-                Profile
-              </h3>
+              <h3 class="text-center mb-0">Profile</h3>
             </div>
+
             <div class="card-body">
               <div class="text-center mb-4">
                 <img
@@ -59,125 +39,242 @@
                   class="rounded-circle mb-3"
                   style="width: 150px; height: 150px; object-fit: cover"
                 />
-                <h4 id="profileName">Register Now!</h4>
-                <p class="text-muted" id="profileNetId">
-                  Create an account to view your profile
-                </p>
+                <h4 id="profileName">Loading...</h4>
+                <p class="text-muted mb-0" id="profileNetId"></p>
               </div>
 
               <div class="profile-info-container">
-                <div class="profile-section">
-                  <div class="section-header">
-                    <i class="bi bi-person-circle"></i>
-                    <h5>Personal Information</h5>
+                <!-- Personal Information -->
+                <div class="profile-section mb-4">
+                  <div class="section-header d-flex align-items-center mb-3">
+                    <i class="bi bi-person-circle me-2"></i>
+                    <h5 class="mb-0">Personal Information</h5>
                   </div>
+
                   <div class="info-grid">
-                    <div class="info-item">
-                      <span class="info-label">Username</span>
-                      <span class="info-value" id="profileUsername">-</span>
-                    </div>
-                    <div class="info-item">
-                      <span class="info-label">NetID</span>
-                      <span class="info-value" id="profileNetIdDisplay">-</span>
-                    </div>
-                    <div class="info-item">
-                      <span class="info-label">Gender</span>
-                      <span class="info-value" id="gender">Not specified</span>
-                    </div>
-                    <div class="info-item">
-                      <span class="info-label">Ethnicity</span>
-                      <span class="info-value" id="ethnicity"
+                    <div class="info-item mb-2">
+                      <span class="info-label fw-bold">Name</span>
+                      <span class="info-value d-block" id="profileUsername"
                         >Not specified</span
                       >
                     </div>
-                    <div class="info-item">
-                      <span class="info-label">Religion</span>
-                      <span class="info-value" id="religion"
+
+                    <div class="info-item mb-2">
+                      <span class="info-label fw-bold">NetID</span>
+                      <span class="info-value d-block" id="profileNetIdDisplay"
+                        >Not specified</span
+                      >
+                    </div>
+
+                    <div class="info-item mb-2">
+                      <span class="info-label fw-bold">Gender</span>
+                      <span class="info-value d-block" id="gender"
+                        >Not specified</span
+                      >
+                    </div>
+
+                    <div class="info-item mb-2">
+                      <span class="info-label fw-bold">Ethnicity</span>
+                      <span class="info-value d-block" id="ethnicity"
+                        >Not specified</span
+                      >
+                    </div>
+
+                    <div class="info-item mb-2">
+                      <span class="info-label fw-bold">Religion</span>
+                      <span class="info-value d-block" id="religion"
                         >Not specified</span
                       >
                     </div>
                   </div>
                 </div>
 
-                <div class="profile-section">
-                  <div class="section-header">
-                    <i class="bi bi-mortarboard"></i>
-                    <h5>Academic Information</h5>
+                <!-- Academic Information -->
+                <div class="profile-section mb-4">
+                  <div class="section-header d-flex align-items-center mb-3">
+                    <i class="bi bi-mortarboard me-2"></i>
+                    <h5 class="mb-0">Academic Information</h5>
                   </div>
-                  <div class="info-grid">
-                    <div class="info-item">
-                      <span class="info-label">Major</span>
-                      <span class="info-value" id="major">Not specified</span>
-                    </div>
-                    <div class="info-item">
-                      <span class="info-label">Year</span>
-                      <span class="info-value" id="profileYear">-</span>
-                    </div>
-                    <div class="info-item">
-                      <span class="info-label">Campus</span>
-                      <span class="info-value" id="profileCampus">-</span>
-                    </div>
-                  </div>
-                </div>
 
-                <div class="profile-section">
-                  <div class="section-header">
-                    <i class="bi bi-house-door"></i>
-                    <h5>Living Habits</h5>
-                  </div>
                   <div class="info-grid">
-                    <div class="info-item">
-                      <span class="info-label">Cleanliness</span>
-                      <span class="info-value" id="cleanliness"
-                        >Not specified</span
-                      >
-                    </div>
-                    <div class="info-item">
-                      <span class="info-label">Noise Tolerance</span>
-                      <span class="info-value" id="noisetolerance"
-                        >Not specified</span
-                      >
-                    </div>
-                    <div class="info-item">
-                      <span class="info-label">Room Budget</span>
-                      <span class="info-value" id="roombudget"
-                        >Not specified</span
-                      >
-                    </div>
-                    <!-- Race preference shouldnt be displayed publically. BUT allowed to be filtered when searching. No outright rascism. But optionality and functionality -->
-                    <div class="info-item">
-                      <span class="info-label">Smoking?</span>
-                      <span class="info-value" id="prefsmoking"
-                        >Not specified</span
-                      >
-                    </div>
-                    <div class="info-item">
-                      <span class="info-label">Drinking?</span>
-                      <span class="info-value" id="prefdrinking"
-                        >Not specified</span
-                      >
-                    </div>
-                    <div class="info-item">
-                      <span class="info-label">Sleep by</span>
-                      <span class="info-value" id="sleepstarttime"
-                        >Not specified</span
-                      >
-                    </div>
-                    <div class="info-item">
-                      <span class="info-label">Awake by</span>
-                      <span class="info-value" id="sleependtime"
+                    <div class="info-item mb-2">
+                      <span class="info-label fw-bold">Major</span>
+                      <span class="info-value d-block" id="major"
                         >Not specified</span
                       >
                     </div>
                   </div>
                 </div>
 
-                <div class="profile-section">
-                  <div class="section-header">
-                    <i class="bi bi-people"></i>
-                    <h5>Roommate Preferences</h5>
+                <!-- Living Habits -->
+                <div class="profile-section mb-4">
+                  <div class="section-header d-flex align-items-center mb-3">
+                    <i class="bi bi-house-door me-2"></i>
+                    <h5 class="mb-0">Living Habits</h5>
                   </div>
-                  <div class="info-grid"></div>
+
+                  <div class="info-grid">
+                    <div class="info-item mb-2">
+                      <span class="info-label fw-bold">Cleanliness</span>
+                      <span class="info-value d-block" id="cleanliness"
+                        >Not specified</span
+                      >
+                    </div>
+
+                    <div class="info-item mb-2">
+                      <span class="info-label fw-bold">Noise Tolerance</span>
+                      <span class="info-value d-block" id="noisetolerance"
+                        >Not specified</span
+                      >
+                    </div>
+
+                    <div class="info-item mb-2">
+                      <span class="info-label fw-bold">Smoking</span>
+                      <span class="info-value d-block" id="smoking"
+                        >Not specified</span
+                      >
+                    </div>
+
+                    <div class="info-item mb-2">
+                      <span class="info-label fw-bold">Drinking</span>
+                      <span class="info-value d-block" id="drinking"
+                        >Not specified</span
+                      >
+                    </div>
+
+                    <div class="info-item mb-2">
+                      <span class="info-label fw-bold">Sleep Habits</span>
+                      <span class="info-value d-block" id="sleephabits"
+                        >Not specified</span
+                      >
+                    </div>
+
+                    <div class="info-item mb-2">
+                      <span class="info-label fw-bold">Sleep Start</span>
+                      <span class="info-value d-block" id="sleepstarttime"
+                        >Not specified</span
+                      >
+                    </div>
+
+                    <div class="info-item mb-2">
+                      <span class="info-label fw-bold">Wake Time</span>
+                      <span class="info-value d-block" id="sleependtime"
+                        >Not specified</span
+                      >
+                    </div>
+
+                    <div class="info-item mb-2">
+                      <span class="info-label fw-bold">Study Start</span>
+                      <span class="info-value d-block" id="studystarttime"
+                        >Not specified</span
+                      >
+                    </div>
+
+                    <div class="info-item mb-2">
+                      <span class="info-label fw-bold">Study End</span>
+                      <span class="info-value d-block" id="studyendtime"
+                        >Not specified</span
+                      >
+                    </div>
+
+                    <div class="info-item mb-2">
+                      <span class="info-label fw-bold">Shared Space Start</span>
+                      <span class="info-value d-block" id="sharedstarttime"
+                        >Not specified</span
+                      >
+                    </div>
+
+                    <div class="info-item mb-2">
+                      <span class="info-label fw-bold">Shared Space End</span>
+                      <span class="info-value d-block" id="sharedendtime"
+                        >Not specified</span
+                      >
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Roommate Preferences -->
+                <div class="profile-section mb-4">
+                  <div class="section-header d-flex align-items-center mb-3">
+                    <i class="bi bi-people me-2"></i>
+                    <h5 class="mb-0">Roommate Preferences</h5>
+                  </div>
+
+                  <div class="info-grid">
+                    <div class="info-item mb-2">
+                      <span class="info-label fw-bold">Preferred Gender</span>
+                      <span class="info-value d-block" id="prefgender"
+                        >Not specified</span
+                      >
+                    </div>
+
+                    <div class="info-item mb-2">
+                      <span class="info-label fw-bold"
+                        >Preferred Ethnicity</span
+                      >
+                      <span class="info-value d-block" id="prefrace"
+                        >Not specified</span
+                      >
+                    </div>
+
+                    <div class="info-item mb-2">
+                      <span class="info-label fw-bold">Preferred Religion</span>
+                      <span class="info-value d-block" id="prefreligion"
+                        >Not specified</span
+                      >
+                    </div>
+
+                    <div class="info-item mb-2">
+                      <span class="info-label fw-bold">Preferred Major</span>
+                      <span class="info-value d-block" id="prefmajor"
+                        >Not specified</span
+                      >
+                    </div>
+
+                    <div class="info-item mb-2">
+                      <span class="info-label fw-bold">Preferred Smoking</span>
+                      <span class="info-value d-block" id="roommatePrefSmoking"
+                        >Not specified</span
+                      >
+                    </div>
+
+                    <div class="info-item mb-2">
+                      <span class="info-label fw-bold">Preferred Drinking</span>
+                      <span class="info-value d-block" id="roommatePrefDrinking"
+                        >Not specified</span
+                      >
+                    </div>
+
+                    <div class="info-item mb-2">
+                      <span class="info-label fw-bold">Room Budget</span>
+                      <span class="info-value d-block" id="roombudget"
+                        >Not specified</span
+                      >
+                    </div>
+
+                    <div class="info-item mb-2">
+                      <span class="info-label fw-bold">Preferred Low Temp</span>
+                      <span class="info-value d-block" id="preflowtemp"
+                        >Not specified</span
+                      >
+                    </div>
+
+                    <div class="info-item mb-2">
+                      <span class="info-label fw-bold"
+                        >Preferred High Temp</span
+                      >
+                      <span class="info-value d-block" id="prefhightemp"
+                        >Not specified</span
+                      >
+                    </div>
+
+                    <div class="info-item mb-2">
+                      <span class="info-label fw-bold">Guest Frequency</span>
+                      <span class="info-value d-block" id="prefguestfreq"
+                        >Not specified</span
+                      >
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -203,8 +300,9 @@
                 href="https://newbrunswick.rutgers.edu/"
                 target="_blank"
                 class="text-decoration-none"
-                >Contact Us</a
               >
+                Contact Us
+              </a>
             </p>
           </div>
         </div>
@@ -212,79 +310,73 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-
     <script src="/js/navbar.js"></script>
 
     <script>
+      function setText(id, value, fallback = "Not specified") {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.textContent = value ?? fallback;
+      }
+
       (async () => {
         try {
-          // 1) Load navbar and get user session info
-          // WHY: navbar.js becomes the single source of truth for auth state.
+          // Load navbar and auth state
           const user = await loadNavbar("profile");
 
-          // 2) If no user → redirect to login
-          // WHY: prevents unauthorized access to the profile page.
           if (!user) {
             window.location.href = "/login";
             return;
           }
-          const registerCta = document.getElementById("registerCta");
-          if (registerCta) registerCta.style.display = "none";
-          // 3) Populate profile fields from the user object
-          // WHY: no extra /api/user-data call; avoids duplicate fetch + timing issues.
 
-          // 4) Render data (safe defaults if missing)
-          // WHY: preferences can be null/undefined depending on DB.
+          // Hide register CTA for logged-in users
+          const registerCta = document.getElementById("registerCta");
+          if (registerCta) {
+            registerCta.style.display = "none";
+          }
+
           const personal = user.personal || {};
-          const academic = user.academic || {};
           const habits = user.habits || {};
           const roommatePreferences = user.roommatePreferences || {};
 
-          //Personal Information
-          document.getElementById("profileName").textContent =
-            user.realname ?? "";
-          document.getElementById("profileNetId").textContent =
-            user.netid ?? "";
-          document.getElementById("profileUsername").textContent =
-            user.realname ?? "";
-          document.getElementById("profileNetIdDisplay").textContent =
-            user.netid ?? "";
-          document.getElementById("gender").textContent =
-            personal.gender || "Not specified";
-          document.getElementById("ethnicity").textContent =
-            personal.prefrace || "Not specified";
-          document.getElementById("religion").textContent =
-            personal.prefreligion || "Not specified";
+          // Personal Information
+          setText("profileName", user.realname ?? "", "");
+          setText("profileNetId", user.netid ?? "", "");
+          setText("profileUsername", user.realname ?? "", "");
+          setText("profileNetIdDisplay", user.netid ?? "", "");
+          setText("gender", personal.gender);
+          setText("ethnicity", personal.ethnicity);
+          setText("religion", personal.religion);
 
-          //Academic Information
-          document.getElementById("major").textContent =
-            academic.major || "Not specified";
-          document.getElementById("profileYear").textContent = "-";
-          document.getElementById("profileCampus").textContent =
-            user.preferred_campus ?? "-";
+          // Academic Information
+          setText("major", personal.major);
 
-          //Living Habits
+          // Living Habits
+          setText("cleanliness", habits.cleanliness);
+          setText("noisetolerance", habits.noisetolerance);
+          setText("smoking", habits.smoking);
+          setText("drinking", habits.drinking);
+          setText("sleephabits", habits.sleephabits);
+          setText("sleepstarttime", habits.sleepstarttime);
+          setText("sleependtime", habits.sleependtime);
+          setText("studystarttime", habits.studystarttime);
+          setText("studyendtime", habits.studyendtime);
+          setText("sharedstarttime", habits.sharedstarttime);
+          setText("sharedendtime", habits.sharedendtime);
 
-          document.getElementById("cleanliness").textContent =
-            habits.cleanliness || "Not specified";
-          document.getElementById("noisetolerance").textContent =
-            habits.noisetolerance || "Not specified";
+          // Roommate Preferences
+          setText("prefgender", roommatePreferences.prefgender);
+          setText("prefrace", roommatePreferences.prefrace);
+          setText("prefreligion", roommatePreferences.prefreligion);
+          setText("prefmajor", roommatePreferences.prefmajor);
+          setText("roommatePrefSmoking", roommatePreferences.prefsmoking);
+          setText("roommatePrefDrinking", roommatePreferences.prefdrinking);
+          setText("roombudget", roommatePreferences.roombudget);
+          setText("preflowtemp", roommatePreferences.preflowtemp);
+          setText("prefhightemp", roommatePreferences.prefhightemp);
+          setText("prefguestfreq", roommatePreferences.prefguestfreq);
 
-          document.getElementById("roombudget").textContent =
-            roommatePreferences.roombudget || "Not specified";
-          document.getElementById("prefsmoking").textContent =
-            habits.smoking || "Not specified";
-          document.getElementById("prefdrinking").textContent =
-            habits.drinking || "Not specified";
-          document.getElementById("sleepstarttime").textContent =
-            habits.sleepstarttime || "Not specified";
-          document.getElementById("sleependtime").textContent =
-            habits.sleependtime || "Not specified";
-
-          //Roommate Preferences
-
-          // 5) Profile picture sync (optional)
-          // WHY: ensures profile page reflects localStorage; navbar.js may already do this.
+          // Optional profile picture sync
           const savedProfilePic = localStorage.getItem("userProfilePic");
           if (savedProfilePic) {
             document
@@ -294,16 +386,19 @@
               });
           }
 
-          // 6) Optional: dropdown fields if they exist on this page
-          // WHY: avoid null crashes if the page doesn't include these elements.
+          // Optional dropdown support if present
           const dropdownName = document.getElementById("dropdownName");
           const dropdownNetId = document.getElementById("dropdownNetId");
-          if (dropdownName)
+
+          if (dropdownName) {
             dropdownName.textContent = user.realname ?? "Account";
-          if (dropdownNetId) dropdownNetId.textContent = user.netid ?? "";
+          }
+
+          if (dropdownNetId) {
+            dropdownNetId.textContent = user.netid ?? "";
+          }
         } catch (err) {
           console.error("Profile init failed:", err);
-          // Fail closed: if auth or navbar loading fails, redirect.
           window.location.href = "/login";
         }
       })();
