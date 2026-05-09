@@ -96,4 +96,120 @@ router.post("/listings", async (req, res) => {
   }
 });
 
+// POST /api/listings/:postid/save
+router.post("/listings/:postid/save", async (req, res) => {
+  if (!req.session || !req.session.user) {
+    return res.status(401).json({ error: "Not authenticated" });
+  }
+
+  const userid = req.session.user.userid;
+  const postid = Number(req.params.postid);
+
+  if (!Number.isInteger(postid) || postid <= 0) {
+    return res.status(400).json({ error: "Invalid listing id" });
+  }
+
+  let connection;
+  try {
+    connection = await getPool().getConnection();
+
+    // Optional: prevent saving your own listing
+    const [ownerRows] = await connection.query(
+      `SELECT userid FROM createdroommatelistings WHERE postid = ?`,
+      [postid],
+    );
+
+    if (ownerRows.length === 0) {
+      return res.status(404).json({ error: "Listing not found" });
+    }
+
+    if (Number(ownerRows[0].userid) === Number(userid)) {
+      return res
+        .status(400)
+        .json({ error: "You cannot save your own listing" });
+    }
+
+    // Prevent duplicate saves
+    const [existingRows] = await connection.query(
+      `
+      SELECT saveid
+      FROM savedroommatelistings
+      WHERE userid = ? AND postid = ?
+      `,
+      [userid, postid],
+    );
+
+    if (existingRows.length > 0) {
+      return res.status(409).json({ error: "Listing already saved" });
+    }
+
+    const [result] = await connection.query(
+      `
+      INSERT INTO savedroommatelistings (userid, postid)
+      VALUES (?, ?)
+      `,
+      [userid, postid],
+    );
+
+    return res.status(201).json({
+      message: "Listing saved successfully",
+      saveid: result.insertId,
+    });
+  } catch (error) {
+    console.error("Save listing error:", error);
+    return res.status(500).json({ error: "Failed to save listing" });
+  } finally {
+    if (connection) connection.release();
+  }
+});
+
+// GET /api/saved-listings
+router.get("/saved-listings", async (req, res) => {
+  if (!req.session || !req.session.user) {
+    return res.status(401).json({ error: "Not authenticated" });
+  }
+
+  const userid = req.session.user.userid;
+
+  let connection;
+  try {
+    connection = await getPool().getConnection();
+
+    const [rows] = await connection.query(
+      `
+      SELECT
+        l.postid,
+        l.userid,
+        l.createtime,
+        l.address,
+        l.campus,
+        l.roomnumber,
+        l.roomtype,
+        l.numrooms,
+        l.numroommates,
+        u.realname,
+        u.netid,
+        u.major
+      FROM savedroommatelistings s
+      JOIN createdroommatelistings l
+        ON s.postid = l.postid
+      JOIN useraccounts u
+        ON l.userid = u.userid
+      WHERE s.userid = ?
+      ORDER BY s.saveid DESC
+      `,
+      [userid],
+    );
+
+    return res.json({
+      message: rows.length === 0 ? "No saved listings found" : "Success",
+      listings: rows,
+    });
+  } catch (error) {
+    console.error("Get saved listings error:", error);
+    return res.status(500).json({ error: "Failed to fetch saved listings" });
+  } finally {
+    if (connection) connection.release();
+  }
+});
 module.exports = router;

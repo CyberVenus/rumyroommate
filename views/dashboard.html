@@ -57,6 +57,33 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/js/navbar.js"></script>
     <script>
+      function attachSaveListingHandlers() {
+        document.querySelectorAll(".save-listing-btn").forEach((button) => {
+          button.addEventListener("click", async () => {
+            const postid = button.dataset.postid;
+
+            try {
+              const response = await fetch(`/api/listings/${postid}/save`, {
+                method: "POST",
+                credentials: "include",
+              });
+
+              const data = await response.json();
+
+              if (response.ok) {
+                button.textContent = "Saved";
+                button.disabled = true;
+              } else {
+                alert(data.error || "Failed to save listing");
+              }
+            } catch (error) {
+              console.error("Save listing request error:", error);
+              alert("Server error");
+            }
+          });
+        });
+      }
+
       function renderListings(listings, currentUserId) {
         const container = document.getElementById("listingsContainer");
 
@@ -103,12 +130,28 @@
                   <strong>Rooms / Roommates:</strong>
                   ${listing.numrooms ?? "?"} / ${listing.numroommates ?? "?"}
                 </div>
+                <div class="col-md-6 mb-2">
+                  <strong>Save Listing:</strong>
+                  ${
+                    !isMine
+                      ? `
+                      <button
+                        class="btn btn-sm btn-primary save-listing-btn"
+                        data-postid="${listing.postid}"
+                      >
+                        Save Listing
+                      </button>
+                    `
+                      : ""
+                  }
+                </div>
               </div>
             </div>
           </div>
         `;
           })
           .join("");
+        attachSaveListingHandlers();
       }
     </script>
     <script>
