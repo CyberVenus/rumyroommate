@@ -1,3 +1,9 @@
+/**
+ * @deprecated Legacy module.
+ * This file is outside the canonical MVP runtime path.
+ * Canonical runtime is app.js.
+ */
+
 /* Main Page Controllers */
 const { getListings } = require('./getListings.js');
 const { getPreferences } = require('./getPreferences.js');
