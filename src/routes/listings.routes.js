@@ -212,4 +212,37 @@ router.get("/saved-listings", async (req, res) => {
     if (connection) connection.release();
   }
 });
+
+// GET /api/saved-listing-ids
+router.get("/saved-listing-ids", async (req, res) => {
+  if (!req.session || !req.session.user) {
+    return res.status(401).json({ error: "Not authenticated" });
+  }
+
+  const userid = req.session.user.userid;
+
+  let connection;
+  try {
+    connection = await getPool().getConnection();
+
+    const [rows] = await connection.query(
+      `
+      SELECT postid
+      FROM savedroommatelistings
+      WHERE userid = ?
+      ORDER BY saveid DESC
+      `,
+      [userid],
+    );
+
+    return res.json({
+      savedPostIds: rows.map((row) => Number(row.postid)),
+    });
+  } catch (error) {
+    console.error("Get saved listing ids error:", error);
+    return res.status(500).json({ error: "Failed to fetch saved listing ids" });
+  } finally {
+    if (connection) connection.release();
+  }
+});
 module.exports = router;

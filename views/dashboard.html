@@ -84,8 +84,9 @@
         });
       }
 
-      function renderListings(listings, currentUserId) {
+      function renderListings(listings, currentUserId, savedPostIds = []) {
         const container = document.getElementById("listingsContainer");
+        const savedPostIdSet = new Set(savedPostIds.map((id) => String(id)));
 
         if (!Array.isArray(listings) || listings.length === 0) {
           container.innerHTML = `
@@ -97,6 +98,7 @@
         container.innerHTML = listings
           .map((listing) => {
             const isMine = String(listing.userid) === String(currentUserId);
+            const isSaved = savedPostIdSet.has(String(listing.postid));
 
             return `
           <div class="card mb-3 shadow-sm">
@@ -136,10 +138,11 @@
                     !isMine
                       ? `
                       <button
-                        class="btn btn-sm btn-primary save-listing-btn"
+                        class="btn btn-sm ${isSaved ? "btn-secondary" : "btn-primary"} save-listing-btn"
                         data-postid="${listing.postid}"
+                        ${isSaved ? "disabled" : ""}
                       >
-                        Save Listing
+                        ${isSaved ? "Saved" : "Save Listing"}
                       </button>
                     `
                       : ""
@@ -182,11 +185,26 @@
 
         // 5) Load listings feed
         try {
+          const savedIdsResponse = await fetch("/api/saved-listing-ids", {
+            credentials: "include",
+          });
+          const savedIdsData = await savedIdsResponse.json();
+
+          if (!savedIdsResponse.ok) {
+            throw new Error(savedIdsData.error || "Failed to load saved listing ids");
+          }
+
           const listings = await fetch("/api/listings", {
             credentials: "include",
           }).then((r) => r.json());
 
-          renderListings(listings, user.userid);
+          renderListings(
+            listings,
+            user.userid,
+            Array.isArray(savedIdsData.savedPostIds)
+              ? savedIdsData.savedPostIds
+              : [],
+          );
         } catch (error) {
           console.error("Failed to load listings:", error);
           document.getElementById("listingsContainer").innerHTML = `
