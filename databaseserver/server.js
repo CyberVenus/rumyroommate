@@ -1,3 +1,9 @@
+/**
+ * @deprecated Legacy module.
+ * This file is outside the canonical MVP runtime path.
+ * Canonical runtime is app.js.
+ */
+
 const express = require('express'); // The express module for server set-up
 const mainpage = require('../mainpage/mainpageOperations.js'); // Main page operations
 const { host, port } = require('./serverSpecs.js');

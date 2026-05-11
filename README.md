@@ -66,3 +66,23 @@ RU My Roommate is a preference-based roommate matchmaking system designed to:
 - Fixed authentication bugs (NetID handling)
 - Improved server-side validation and data integrity
 - Debugged and resolved system-level issues across authentication and data flow
+
+
+---
+
+## ▶ Runtime Entrypoint (Canonical)
+
+Use `app.js` as the **single canonical runtime entrypoint**.
+
+- Start: `npm start` (runs `node app.js`)
+- Dev: `npm run dev` (runs `nodemon app.js`)
+
+### Legacy Code Boundary (Non-MVP Path)
+
+The following paths are legacy from earlier iterations and are **not** part of the current MVP runtime path:
+
+- `server.js` (kept as a compatibility shim; delegates to `app.js`)
+- `databaseserver/*`
+- `mainpage/*`
+
+These legacy modules are retained for reference/history and should not be used for new feature work unless explicitly migrated.
