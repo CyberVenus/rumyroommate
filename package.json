@@ -1,7 +1,7 @@
 {
-  "name": "rutgers-user-management",
+  "name": "ru-my-roommate",
   "version": "1.0.0",
-  "description": "Rutgers User Management System",
+  "description": "A full-stack roommate matching platform for Rutgers students.",
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
