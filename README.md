@@ -66,3 +66,104 @@ RU My Roommate is a preference-based roommate matchmaking system designed to:
 - Fixed authentication bugs (NetID handling)
 - Improved server-side validation and data integrity
 - Debugged and resolved system-level issues across authentication and data flow
+
+
+---
+
+## ▶ Runtime Entrypoint (Canonical)
+
+Use `app.js` as the **single canonical runtime entrypoint**.
+
+- Start: `npm start` (runs `node app.js`)
+- Dev: `npm run dev` (runs `nodemon app.js`)
+
+### Legacy Code Boundary (Non-MVP Path)
+
+The following paths are legacy from earlier iterations and are **not** part of the current MVP runtime path:
+
+- `server.js` (kept as a compatibility shim; delegates to `app.js`)
+- `databaseserver/*`
+- `mainpage/*`
+
+These legacy modules are retained for reference/history and should not be used for new feature work unless explicitly migrated.
+
+
+---
+
+## 🛠 Setup (Fresh Clone)
+
+Follow these steps in order for a clean local setup.
+
+### 1) Install dependencies
+
+```bash
+npm install
+```
+
+### 2) Create local environment file
+
+Copy the example file and update values for your machine:
+
+```bash
+cp .env.example .env
+```
+
+Required environment keys:
+
+- `PORT`
+- `DB_HOST`
+- `DB_PORT`
+- `DB_USER`
+- `DB_PASSWORD`
+- `DB_NAME`
+- `SESSION_SECRET`
+
+### 3) Initialize the database schema
+
+From the repo root:
+
+```bash
+mysql -u <DB_USER> -p < database/schema.sql
+```
+
+This creates/uses the `rumyroommate` database and base tables.
+
+### 4) Apply migrations (in order)
+
+Run migrations **in filename order**:
+
+```bash
+mysql -u <DB_USER> -p < database/migrations/001_cleanup_userpreferences_legacy_columns.sql
+mysql -u <DB_USER> -p < database/migrations/002_make_listing_preferenceids_nullable.sql
+mysql -u <DB_USER> -p < database/migrations/003_make_savedroommatelistings_saveid_autoincrement.sql
+```
+
+Migration order is required because each migration assumes prior schema state.
+
+### 5) Start the app
+
+Canonical runtime is `app.js`:
+
+```bash
+npm start
+```
+
+Dev mode:
+
+```bash
+npm run dev
+```
+
+---
+
+## ✅ First-Run Verification Checklist
+
+After startup, verify:
+
+1. Server boots without DB initialization errors.
+2. `http://localhost:3000` loads the front page.
+3. `http://localhost:3000/api/health/db` returns `{ "ok": true, ... }` and table list.
+4. Register a user from `/register` and confirm success response.
+5. Log in from `/login` and confirm redirect to `/dashboard`.
+
+If step 3 fails, re-check `.env` values and migration/schema commands.
