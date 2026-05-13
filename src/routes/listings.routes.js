@@ -96,6 +96,108 @@ router.post("/listings", async (req, res) => {
   }
 });
 
+// PATCH /api/listings/:postid
+router.patch("/listings/:postid", async (req, res) => {
+  if (!req.session || !req.session.user) {
+    return res.status(401).json({ error: "Not authenticated" });
+  }
+
+  const userid = Number(req.session.user.userid);
+  const postid = Number(req.params.postid);
+
+  if (!Number.isInteger(postid) || postid <= 0) {
+    return res.status(400).json({ error: "Invalid listing id" });
+  }
+
+  const allowedFields = [
+    "address",
+    "campus",
+    "roomnumber",
+    "roomtype",
+    "numrooms",
+    "numroommates",
+  ];
+
+  const updatePayload = {};
+  for (const field of allowedFields) {
+    if (Object.prototype.hasOwnProperty.call(req.body, field)) {
+      updatePayload[field] = req.body[field];
+    }
+  }
+
+  if (Object.keys(updatePayload).length === 0) {
+    return res.status(400).json({ error: "No editable fields provided" });
+  }
+
+  if (Object.prototype.hasOwnProperty.call(updatePayload, "address")) {
+    if (typeof updatePayload.address !== "string" || !updatePayload.address.trim()) {
+      return res.status(400).json({ error: "Address is required" });
+    }
+    updatePayload.address = updatePayload.address.trim();
+  }
+
+  const nullableStringFields = ["campus", "roomnumber", "roomtype"];
+  for (const field of nullableStringFields) {
+    if (Object.prototype.hasOwnProperty.call(updatePayload, field)) {
+      if (updatePayload[field] === null) continue;
+      if (typeof updatePayload[field] !== "string") {
+        return res.status(400).json({ error: `${field} must be a string or null` });
+      }
+      updatePayload[field] = updatePayload[field].trim();
+      if (updatePayload[field] === "") {
+        updatePayload[field] = null;
+      }
+    }
+  }
+
+  const numericFields = ["numrooms", "numroommates"];
+  for (const field of numericFields) {
+    if (Object.prototype.hasOwnProperty.call(updatePayload, field)) {
+      if (updatePayload[field] === null) continue;
+      if (!Number.isInteger(updatePayload[field]) || updatePayload[field] < 0) {
+        return res.status(400).json({ error: `${field} must be a non-negative integer or null` });
+      }
+    }
+  }
+
+  let connection;
+  try {
+    connection = await getPool().getConnection();
+
+    const [listingRows] = await connection.query(
+      `SELECT userid FROM createdroommatelistings WHERE postid = ?`,
+      [postid],
+    );
+
+    if (listingRows.length === 0) {
+      return res.status(404).json({ error: "Listing not found" });
+    }
+
+    if (Number(listingRows[0].userid) !== userid) {
+      return res.status(403).json({ error: "Forbidden" });
+    }
+
+    const updateFields = Object.keys(updatePayload);
+    const setClause = updateFields.map((field) => `${field} = ?`).join(", ");
+    const values = updateFields.map((field) => updatePayload[field]);
+
+    await connection.query(
+      `UPDATE createdroommatelistings SET ${setClause} WHERE postid = ?`,
+      [...values, postid],
+    );
+
+    return res.json({
+      message: "Listing updated successfully",
+      postid,
+    });
+  } catch (error) {
+    console.error("Edit listing error:", error);
+    return res.status(500).json({ error: "Failed to update listing" });
+  } finally {
+    if (connection) connection.release();
+  }
+});
+
 // POST /api/listings/:postid/save
 router.post("/listings/:postid/save", async (req, res) => {
   if (!req.session || !req.session.user) {
