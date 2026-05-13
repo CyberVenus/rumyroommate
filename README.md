@@ -136,6 +136,7 @@ Run migrations **in filename order**:
 mysql -u <DB_USER> -p < database/migrations/001_cleanup_userpreferences_legacy_columns.sql
 mysql -u <DB_USER> -p < database/migrations/002_make_listing_preferenceids_nullable.sql
 mysql -u <DB_USER> -p < database/migrations/003_make_savedroommatelistings_saveid_autoincrement.sql
+mysql -u <DB_USER> -p < database/migrations/004_set_saved_postid_on_delete_cascade.sql
 ```
 
 Migration order is required because each migration assumes prior schema state.
