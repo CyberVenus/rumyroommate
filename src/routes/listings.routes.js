@@ -198,6 +198,53 @@ router.patch("/listings/:postid", async (req, res) => {
   }
 });
 
+// DELETE /api/listings/:postid
+router.delete("/listings/:postid", async (req, res) => {
+  if (!req.session || !req.session.user) {
+    return res.status(401).json({ error: "Not authenticated" });
+  }
+
+  const userid = Number(req.session.user.userid);
+  const postid = Number(req.params.postid);
+
+  if (!Number.isInteger(postid) || postid <= 0) {
+    return res.status(400).json({ error: "Invalid listing id" });
+  }
+
+  let connection;
+  try {
+    connection = await getPool().getConnection();
+
+    const [listingRows] = await connection.query(
+      `SELECT userid FROM createdroommatelistings WHERE postid = ?`,
+      [postid],
+    );
+
+    if (listingRows.length === 0) {
+      return res.status(404).json({ error: "Listing not found" });
+    }
+
+    if (Number(listingRows[0].userid) !== userid) {
+      return res.status(403).json({ error: "Forbidden" });
+    }
+
+    await connection.query(
+      `DELETE FROM createdroommatelistings WHERE postid = ?`,
+      [postid],
+    );
+
+    return res.json({
+      message: "Listing deleted successfully",
+      postid,
+    });
+  } catch (error) {
+    console.error("Delete listing error:", error);
+    return res.status(500).json({ error: "Failed to delete listing" });
+  } finally {
+    if (connection) connection.release();
+  }
+});
+
 // POST /api/listings/:postid/save
 router.post("/listings/:postid/save", async (req, res) => {
   if (!req.session || !req.session.user) {
