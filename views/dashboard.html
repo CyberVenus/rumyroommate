@@ -43,6 +43,7 @@
                   >
                 </div>
                 <div class="card-body">
+                  <div id="dashboardAlert" class="alert d-none" role="alert"></div>
                   <div id="listingsContainer">
                     <p class="text-muted mb-0">Loading listings...</p>
                   </div>
@@ -57,6 +58,33 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/js/navbar.js"></script>
     <script>
+      let dashboardState = {
+        currentUserId: null,
+        savedPostIds: [],
+      };
+
+      function showDashboardAlert(message, type = "info") {
+        const alertEl = document.getElementById("dashboardAlert");
+        if (!alertEl) return;
+        alertEl.className = `alert alert-${type}`;
+        alertEl.textContent = message;
+      }
+
+      function clearDashboardAlert() {
+        const alertEl = document.getElementById("dashboardAlert");
+        if (!alertEl) return;
+        alertEl.className = "alert d-none";
+        alertEl.textContent = "";
+      }
+
+      function mapErrorMessage(response, data, fallback) {
+        if (response.status === 401) return "Please log in again and retry.";
+        if (response.status === 403) return "You are not allowed to modify this listing.";
+        if (response.status === 404) return "This listing no longer exists.";
+        if (response.status >= 500) return "Server error. Please try again in a moment.";
+        return data?.error || fallback;
+      }
+
       function attachSaveListingHandlers() {
         document.querySelectorAll(".save-listing-btn").forEach((button) => {
           button.addEventListener("click", async () => {
@@ -84,6 +112,111 @@
         });
       }
 
+      function refreshListingsAfterDelete(postid) {
+        const card = document.querySelector(`[data-listing-id="${postid}"]`);
+        if (card) {
+          card.remove();
+        }
+
+        const container = document.getElementById("listingsContainer");
+        if (container && !container.querySelector("[data-listing-id]")) {
+          container.innerHTML = `<p class="text-muted mb-0">No listings yet.</p>`;
+        }
+      }
+
+      function attachOwnerListingHandlers() {
+        document.querySelectorAll(".delete-listing-btn").forEach((button) => {
+          button.addEventListener("click", async () => {
+            const postid = button.dataset.postid;
+            const confirmed = window.confirm("Are you sure you want to delete this listing?");
+            if (!confirmed) return;
+
+            button.disabled = true;
+
+            try {
+              const response = await fetch(`/api/listings/${postid}`, {
+                method: "DELETE",
+                credentials: "include",
+              });
+              const data = await response.json().catch(() => ({}));
+
+              if (!response.ok) {
+                button.disabled = false;
+                showDashboardAlert(
+                  mapErrorMessage(response, data, "Failed to delete listing."),
+                  "danger",
+                );
+                return;
+              }
+
+              refreshListingsAfterDelete(postid);
+              showDashboardAlert("Listing deleted successfully.", "success");
+            } catch (error) {
+              console.error("Delete listing request error:", error);
+              button.disabled = false;
+              showDashboardAlert("Server error while deleting listing.", "danger");
+            }
+          });
+        });
+
+        document.querySelectorAll(".edit-listing-btn").forEach((button) => {
+          button.addEventListener("click", async () => {
+            const postid = button.dataset.postid;
+            const currentAddress = button.dataset.address || "";
+            const currentCampus = button.dataset.campus || "";
+            const currentRoomtype = button.dataset.roomtype || "";
+            const nextAddress = window.prompt("Update address", currentAddress);
+
+            if (nextAddress === null) return;
+            if (!nextAddress.trim()) {
+              showDashboardAlert("Address is required to update listing.", "danger");
+              return;
+            }
+
+            const nextCampus = window.prompt("Update campus (optional)", currentCampus);
+            if (nextCampus === null) return;
+            const nextRoomtype = window.prompt("Update room type (optional)", currentRoomtype);
+            if (nextRoomtype === null) return;
+
+            button.disabled = true;
+
+            try {
+              const response = await fetch(`/api/listings/${postid}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify({
+                  address: nextAddress.trim(),
+                  campus: nextCampus.trim() || null,
+                  roomtype: nextRoomtype.trim() || null,
+                }),
+              });
+
+              const data = await response.json().catch(() => ({}));
+
+              if (!response.ok) {
+                showDashboardAlert(
+                  mapErrorMessage(response, data, "Failed to update listing."),
+                  "danger",
+                );
+                button.disabled = false;
+                return;
+              }
+
+              const listings = await fetch("/api/listings", {
+                credentials: "include",
+              }).then((r) => r.json());
+              renderListings(listings, dashboardState.currentUserId, dashboardState.savedPostIds);
+              showDashboardAlert("Listing updated successfully.", "success");
+            } catch (error) {
+              console.error("Edit listing request error:", error);
+              showDashboardAlert("Server error while updating listing.", "danger");
+              button.disabled = false;
+            }
+          });
+        });
+      }
+
       function renderListings(listings, currentUserId, savedPostIds = []) {
         const container = document.getElementById("listingsContainer");
         const savedPostIdSet = new Set(savedPostIds.map((id) => String(id)));
@@ -101,7 +234,7 @@
             const isSaved = savedPostIdSet.has(String(listing.postid));
 
             return `
-          <div class="card mb-3 shadow-sm">
+          <div class="card mb-3 shadow-sm" data-listing-id="${listing.postid}">
             <div class="card-body">
               <div class="d-flex justify-content-between align-items-start mb-2">
                 <div>
@@ -133,10 +266,25 @@
                   ${listing.numrooms ?? "?"} / ${listing.numroommates ?? "?"}
                 </div>
                 <div class="col-md-6 mb-2">
-                  <strong>Save Listing:</strong>
                   ${
-                    !isMine
+                    isMine
                       ? `
+                      <strong>Manage Listing:</strong>
+                      <div class="d-flex gap-2 mt-1 flex-wrap">
+                        <button class="btn btn-sm btn-outline-primary edit-listing-btn"
+                          data-postid="${listing.postid}"
+                          data-address="${listing.address || ""}"
+                          data-campus="${listing.campus || ""}"
+                          data-roomtype="${listing.roomtype || ""}">
+                          Edit
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger delete-listing-btn" data-postid="${listing.postid}">
+                          Delete
+                        </button>
+                      </div>
+                    `
+                      : `
+                      <strong>Save Listing:</strong>
                       <button
                         class="btn btn-sm ${isSaved ? "btn-secondary" : "btn-primary"} save-listing-btn"
                         data-postid="${listing.postid}"
@@ -145,7 +293,6 @@
                         ${isSaved ? "Saved" : "Save Listing"}
                       </button>
                     `
-                      : ""
                   }
                 </div>
               </div>
@@ -155,6 +302,7 @@
           })
           .join("");
         attachSaveListingHandlers();
+        attachOwnerListingHandlers();
       }
     </script>
     <script>
@@ -185,6 +333,7 @@
 
         // 5) Load listings feed
         try {
+          clearDashboardAlert();
           const savedIdsResponse = await fetch("/api/saved-listing-ids", {
             credentials: "include",
           });
@@ -198,12 +347,19 @@
             credentials: "include",
           }).then((r) => r.json());
 
+          const safeSavedIds = Array.isArray(savedIdsData.savedPostIds)
+            ? savedIdsData.savedPostIds
+            : [];
+
+          dashboardState = {
+            currentUserId: user.userid,
+            savedPostIds: safeSavedIds,
+          };
+
           renderListings(
             listings,
             user.userid,
-            Array.isArray(savedIdsData.savedPostIds)
-              ? savedIdsData.savedPostIds
-              : [],
+            safeSavedIds,
           );
         } catch (error) {
           console.error("Failed to load listings:", error);
