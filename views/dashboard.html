@@ -49,6 +49,17 @@
                   </div>
                 </div>
               </div>
+
+              <div class="card">
+                <div class="card-header">
+                  <h5 class="card-title mb-0">Saved Listings</h5>
+                </div>
+                <div class="card-body">
+                  <div id="savedListingsContainer">
+                    <p class="text-muted mb-0">Loading saved listings...</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -133,6 +144,8 @@
                 );
                 showDashboardAlert("Listing unsaved.", "success");
               }
+
+              refreshSavedListings();
             } catch (error) {
               console.error("Save/unsave listing request error:", error);
               showDashboardAlert("Server error while updating saved state.", "danger");
@@ -334,6 +347,77 @@
         attachSaveListingHandlers();
         attachOwnerListingHandlers();
       }
+
+      function formatText(value, fallback = "Not specified") {
+        if (value === null || value === undefined) return fallback;
+        const text = String(value).trim();
+        return text.length > 0 ? text : fallback;
+      }
+
+      function formatCount(value) {
+        if (value === null || value === undefined || value === "") return "?";
+        const num = Number(value);
+        return Number.isFinite(num) ? num : "?";
+      }
+
+      function renderSavedListings(listings) {
+        const container = document.getElementById("savedListingsContainer");
+        const safeListings = Array.isArray(listings) ? listings : [];
+
+        if (safeListings.length === 0) {
+          container.innerHTML = `<p class="text-muted mb-0">You have no saved listings yet.</p>`;
+          return;
+        }
+
+        container.innerHTML = safeListings
+          .map((listing) => `
+            <div class="card mb-3 shadow-sm" data-saved-listing-id="${listing.postid}">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <div>
+                    <h6 class="card-title mb-1">${formatText(listing.address, "No address provided")}</h6>
+                    <p class="text-muted mb-0">
+                      Posted by ${formatText(listing.realname || listing.netid, "Unknown user")}
+                    </p>
+                  </div>
+                  <small class="text-muted">
+                    ${listing.createtime ? new Date(listing.createtime).toLocaleDateString() : ""}
+                  </small>
+                </div>
+                <div class="row">
+                  <div class="col-md-6 mb-2"><strong>Campus:</strong> ${formatText(listing.campus)}</div>
+                  <div class="col-md-6 mb-2"><strong>Room Type:</strong> ${formatText(listing.roomtype)}</div>
+                  <div class="col-md-6 mb-2"><strong>Room Number:</strong> ${formatText(listing.roomnumber)}</div>
+                  <div class="col-md-6 mb-2">
+                    <strong>Rooms / Roommates:</strong> ${formatCount(listing.numrooms)} / ${formatCount(listing.numroommates)}
+                  </div>
+                </div>
+              </div>
+            </div>
+          `)
+          .join("");
+      }
+
+      async function refreshSavedListings() {
+        const container = document.getElementById("savedListingsContainer");
+        try {
+          const response = await fetch("/api/saved-listings", {
+            credentials: "include",
+          });
+          const data = await response.json().catch(() => ({}));
+
+          if (!response.ok) {
+            const message = mapErrorMessage(response, data, "Failed to load saved listings.");
+            container.innerHTML = `<p class="text-danger mb-0">${message}</p>`;
+            return;
+          }
+
+          renderSavedListings(data.listings);
+        } catch (error) {
+          console.error("Failed to load saved listings:", error);
+          container.innerHTML = `<p class="text-danger mb-0">Failed to load saved listings.</p>`;
+        }
+      }
     </script>
     <script>
       // -----------------------------------------------------------
@@ -386,15 +470,15 @@
             savedPostIds: safeSavedIds,
           };
 
-          renderListings(
-            listings,
-            user.userid,
-            safeSavedIds,
-          );
+          renderListings(listings, user.userid, safeSavedIds);
+          await refreshSavedListings();
         } catch (error) {
           console.error("Failed to load listings:", error);
           document.getElementById("listingsContainer").innerHTML = `
             <p class="text-danger mb-0">Failed to load listings.</p>
+          `;
+          document.getElementById("savedListingsContainer").innerHTML = `
+            <p class="text-danger mb-0">Failed to load saved listings.</p>
           `;
         }
       })();
