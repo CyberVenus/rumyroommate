@@ -171,6 +171,37 @@ If step 3 fails, re-check `.env` values and migration/schema commands.
 
 ---
 
+## 🔐 Session/Auth Hardening (PR-011) Notes
+
+### Session cookie behavior by environment
+
+`express-session` cookie settings are now environment-aware:
+
+- **Development (`NODE_ENV` not equal to `production`)**
+  - `cookie.secure = false`
+  - `cookie.sameSite = "lax"`
+- **Production (`NODE_ENV=production`)**
+  - `cookie.secure = true` (HTTPS required)
+  - `cookie.sameSite = "lax"`
+
+For both environments:
+
+- `cookie.httpOnly = true`
+- `cookie.maxAge = 24h`
+- `saveUninitialized = false` (avoids setting empty sessions before login)
+
+### Auth handling rules
+
+- **API routes** return `401` JSON (`{ "error": "Not authenticated" }`) when unauthenticated.
+- **Page routes** (`/dashboard`, `/create-listing`, `/preferences`) keep redirect behavior to `/login` when unauthenticated.
+
+### Logout/session invalidation behavior
+
+- `/api/logout` now destroys the server session with callback error handling.
+- On success, it also clears `connect.sid` so navbar/session state stays correct after logout + refresh.
+
+---
+
 ## 🧪 Listing Validation Hardening (PR-010) Manual API Tests
 
 Use these examples to verify deterministic `400` validation behavior for listing create/edit payloads.

@@ -1,6 +1,7 @@
 const express = require("express");
 // const { getListings } = require("../../mainpage/getListings");
 const { getPool } = require("../config/db");
+const requireAuth = require("../middleware/requireAuth");
 
 const router = express.Router();
 
@@ -76,11 +77,7 @@ router.get("/listings", async (req, res) => {
 });
 
 // POST /api/listings
-router.post("/listings", async (req, res) => {
-  if (!req.session || !req.session.user) {
-    return res.status(401).json({ error: "Not authenticated" });
-  }
-
+router.post("/listings", requireAuth, async (req, res) => {
   const userid = req.session.user.userid;
   const addressResult = normalizeRequiredString(req.body.address, "Address");
   if (addressResult.error) {
@@ -157,11 +154,7 @@ router.post("/listings", async (req, res) => {
 });
 
 // PATCH /api/listings/:postid
-router.patch("/listings/:postid", async (req, res) => {
-  if (!req.session || !req.session.user) {
-    return res.status(401).json({ error: "Not authenticated" });
-  }
-
+router.patch("/listings/:postid", requireAuth, async (req, res) => {
   const userid = Number(req.session.user.userid);
   const postid = Number(req.params.postid);
 
@@ -255,11 +248,7 @@ router.patch("/listings/:postid", async (req, res) => {
 });
 
 // DELETE /api/listings/:postid
-router.delete("/listings/:postid", async (req, res) => {
-  if (!req.session || !req.session.user) {
-    return res.status(401).json({ error: "Not authenticated" });
-  }
-
+router.delete("/listings/:postid", requireAuth, async (req, res) => {
   const userid = Number(req.session.user.userid);
   const postid = Number(req.params.postid);
 
@@ -302,11 +291,7 @@ router.delete("/listings/:postid", async (req, res) => {
 });
 
 // POST /api/listings/:postid/save
-router.post("/listings/:postid/save", async (req, res) => {
-  if (!req.session || !req.session.user) {
-    return res.status(401).json({ error: "Not authenticated" });
-  }
-
+router.post("/listings/:postid/save", requireAuth, async (req, res) => {
   const userid = req.session.user.userid;
   const postid = Number(req.params.postid);
 
@@ -369,11 +354,7 @@ router.post("/listings/:postid/save", async (req, res) => {
 });
 
 // DELETE /api/listings/:postid/save
-router.delete("/listings/:postid/save", async (req, res) => {
-  if (!req.session || !req.session.user) {
-    return res.status(401).json({ error: "Not authenticated" });
-  }
-
+router.delete("/listings/:postid/save", requireAuth, async (req, res) => {
   const userid = req.session.user.userid;
   const postid = Number(req.params.postid);
 
@@ -420,11 +401,7 @@ router.delete("/listings/:postid/save", async (req, res) => {
 });
 
 // GET /api/saved-listings
-router.get("/saved-listings", async (req, res) => {
-  if (!req.session || !req.session.user) {
-    return res.status(401).json({ error: "Not authenticated" });
-  }
-
+router.get("/saved-listings", requireAuth, async (req, res) => {
   const userid = req.session.user.userid;
 
   let connection;
@@ -470,11 +447,7 @@ router.get("/saved-listings", async (req, res) => {
 });
 
 // GET /api/saved-listing-ids
-router.get("/saved-listing-ids", async (req, res) => {
-  if (!req.session || !req.session.user) {
-    return res.status(401).json({ error: "Not authenticated" });
-  }
-
+router.get("/saved-listing-ids", requireAuth, async (req, res) => {
   const userid = req.session.user.userid;
 
   let connection;

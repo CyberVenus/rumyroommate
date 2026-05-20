@@ -7,6 +7,7 @@ const os = require("os");
 require("dotenv").config();
 
 const { initDb, getPool } = require("./src/config/db");
+const requireAuth = require("./src/middleware/requireAuth");
 
 //Routers
 const healthRouter = require("./src/routes/health.routes");
@@ -14,6 +15,7 @@ const listingsRouter = require("./src/routes/listings.routes");
 
 const app = express();
 const PORT = Number(process.env.PORT || 3000);
+const isProduction = process.env.NODE_ENV === "production";
 
 // Database configuration
 const dbConfig = {
@@ -47,10 +49,11 @@ app.use(
   session({
     secret: process.env.SESSION_SECRET,
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
     cookie: {
-      secure: false, // Set to true if using HTTPS
+      secure: isProduction,
       httpOnly: true,
+      sameSite: "lax",
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
     },
   }),
@@ -354,12 +357,7 @@ app.post("/api/login", async (req, res) => {
   }
 });
 
-app.post("/api/update-preferences", async (req, res) => {
-  // 1️⃣ Ensure user is logged in
-  if (!req.session.user) {
-    return res.status(401).json({ error: "Not authenticated." });
-  }
-
+app.post("/api/update-preferences", requireAuth, async (req, res) => {
   const userid = req.session.user.userid;
 
   // 2️⃣ Extract grouped fields from request body
@@ -490,12 +488,8 @@ app.post("/api/update-preferences", async (req, res) => {
   }
 });
 
-app.get("/api/user-data", async (req, res) => {
+app.get("/api/user-data", requireAuth, async (req, res) => {
   try {
-    if (!req.session.user) {
-      return res.status(401).json({ error: "Not authenticated" });
-    }
-
     const { userid } = req.session.user;
 
     // Pull account/personal info
@@ -600,8 +594,20 @@ app.get("/api/user-data", async (req, res) => {
 });
 
 app.post("/api/logout", (req, res) => {
-  req.session.destroy();
-  res.json({ message: "Logged out successfully." });
+  req.session.destroy((err) => {
+    if (err) {
+      console.error("Logout error:", err);
+      return res.status(500).json({ error: "Logout failed." });
+    }
+
+    res.clearCookie("connect.sid", {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: "lax",
+    });
+
+    return res.json({ message: "Logged out successfully." });
+  });
 });
 
 // ✅ Start the server (initialize db, then listen)
