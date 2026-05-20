@@ -168,3 +168,104 @@ After startup, verify:
 5. Log in from `/login` and confirm redirect to `/dashboard`.
 
 If step 3 fails, re-check `.env` values and migration/schema commands.
+
+---
+
+## 🧪 Listing Validation Hardening (PR-010) Manual API Tests
+
+Use these examples to verify deterministic `400` validation behavior for listing create/edit payloads.
+
+```bash
+BASE=http://localhost:3000/api
+OWNER_COOKIE=owner-cookies.txt
+```
+
+For PATCH tests, first create a valid listing, copy the returned `postid`, then set:
+
+```bash
+VALID_POSTID=<returned_postid>
+```
+
+### Negative tests
+
+```bash
+# 1) Create with missing address -> 400
+curl -i -X POST "$BASE/listings" \
+  -b "$OWNER_COOKIE" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+
+# 2) Create with blank address -> 400
+curl -i -X POST "$BASE/listings" \
+  -b "$OWNER_COOKIE" \
+  -H "Content-Type: application/json" \
+  -d '{"address":"   "}'
+
+# 3) Create with numrooms: -1 -> 400
+curl -i -X POST "$BASE/listings" \
+  -b "$OWNER_COOKIE" \
+  -H "Content-Type: application/json" \
+  -d '{"address":"1 College Ave","numrooms":-1}'
+
+# 4) Create with numroommates: 1.5 -> 400
+curl -i -X POST "$BASE/listings" \
+  -b "$OWNER_COOKIE" \
+  -H "Content-Type: application/json" \
+  -d '{"address":"1 College Ave","numroommates":1.5}'
+
+# 5) Create with numeric string ("3") -> 400
+curl -i -X POST "$BASE/listings" \
+  -b "$OWNER_COOKIE" \
+  -H "Content-Type: application/json" \
+  -d '{"address":"1 College Ave","numrooms":"3"}'
+
+# 7) Patch with empty body -> 400
+curl -i -X PATCH "$BASE/listings/$VALID_POSTID" \
+  -b "$OWNER_COOKIE" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+
+# 8) Patch with unknown field -> 400
+curl -i -X PATCH "$BASE/listings/$VALID_POSTID" \
+  -b "$OWNER_COOKIE" \
+  -H "Content-Type: application/json" \
+  -d '{"unknownField":"x"}'
+
+# 9) Patch with blank address -> 400
+curl -i -X PATCH "$BASE/listings/$VALID_POSTID" \
+  -b "$OWNER_COOKIE" \
+  -H "Content-Type: application/json" \
+  -d '{"address":"   "}'
+
+# 10) Patch with invalid numeric fields -> 400
+curl -i -X PATCH "$BASE/listings/$VALID_POSTID" \
+  -b "$OWNER_COOKIE" \
+  -H "Content-Type: application/json" \
+  -d '{"numroommates":-2}'
+```
+
+### Normalization test
+
+```bash
+# 6) Optional empty strings are accepted and normalized to null
+curl -i -X POST "$BASE/listings" \
+  -b "$OWNER_COOKIE" \
+  -H "Content-Type: application/json" \
+  -d '{"address":"1 College Ave","campus":"   ","roomnumber":"","roomtype":"  "}'
+```
+
+### Positive tests
+
+```bash
+# 11) Valid create still works
+curl -i -X POST "$BASE/listings" \
+  -b "$OWNER_COOKIE" \
+  -H "Content-Type: application/json" \
+  -d '{"address":"1 College Ave","campus":"Busch","roomnumber":"101","roomtype":"Double","numrooms":3,"numroommates":2}'
+
+# 12) Valid patch still works
+curl -i -X PATCH "$BASE/listings/$VALID_POSTID" \
+  -b "$OWNER_COOKIE" \
+  -H "Content-Type: application/json" \
+  -d '{"campus":"Livingston","numrooms":2}'
+```

@@ -4,6 +4,39 @@ const { getPool } = require("../config/db");
 
 const router = express.Router();
 
+const LISTING_FIELDS = [
+  "address",
+  "campus",
+  "roomnumber",
+  "roomtype",
+  "numrooms",
+  "numroommates",
+];
+
+function normalizeRequiredString(value, fieldLabel) {
+  if (typeof value !== "string" || !value.trim()) {
+    return { error: `${fieldLabel} is required` };
+  }
+  return { value: value.trim() };
+}
+
+function normalizeOptionalString(value, fieldName) {
+  if (value === null) return { value: null };
+  if (typeof value !== "string") {
+    return { error: `${fieldName} must be a string or null` };
+  }
+  const trimmed = value.trim();
+  return { value: trimmed === "" ? null : trimmed };
+}
+
+function normalizeOptionalNonNegativeInteger(value, fieldName) {
+  if (value === null) return { value: null };
+  if (!Number.isInteger(value) || value < 0) {
+    return { error: `${fieldName} must be a non-negative integer or null` };
+  }
+  return { value };
+}
+
 // GET /api/listings
 router.get("/listings", async (req, res) => {
   let connection;
@@ -49,18 +82,45 @@ router.post("/listings", async (req, res) => {
   }
 
   const userid = req.session.user.userid;
-  const {
-    address,
-    campus = null,
-    roomnumber = null,
-    roomtype = null,
-    numrooms = null,
-    numroommates = null,
-  } = req.body;
-
-  if (!address) {
-    return res.status(400).json({ error: "Address is required" });
+  const addressResult = normalizeRequiredString(req.body.address, "Address");
+  if (addressResult.error) {
+    return res.status(400).json({ error: addressResult.error });
   }
+
+  const campusResult = normalizeOptionalString(req.body.campus ?? null, "campus");
+  if (campusResult.error) {
+    return res.status(400).json({ error: campusResult.error });
+  }
+
+  const roomnumberResult = normalizeOptionalString(req.body.roomnumber ?? null, "roomnumber");
+  if (roomnumberResult.error) {
+    return res.status(400).json({ error: roomnumberResult.error });
+  }
+
+  const roomtypeResult = normalizeOptionalString(req.body.roomtype ?? null, "roomtype");
+  if (roomtypeResult.error) {
+    return res.status(400).json({ error: roomtypeResult.error });
+  }
+
+  const numroomsResult = normalizeOptionalNonNegativeInteger(req.body.numrooms ?? null, "numrooms");
+  if (numroomsResult.error) {
+    return res.status(400).json({ error: numroomsResult.error });
+  }
+
+  const numroommatesResult = normalizeOptionalNonNegativeInteger(
+    req.body.numroommates ?? null,
+    "numroommates",
+  );
+  if (numroommatesResult.error) {
+    return res.status(400).json({ error: numroommatesResult.error });
+  }
+
+  const address = addressResult.value;
+  const campus = campusResult.value;
+  const roomnumber = roomnumberResult.value;
+  const roomtype = roomtypeResult.value;
+  const numrooms = numroomsResult.value;
+  const numroommates = numroommatesResult.value;
 
   let connection;
   try {
@@ -109,17 +169,14 @@ router.patch("/listings/:postid", async (req, res) => {
     return res.status(400).json({ error: "Invalid listing id" });
   }
 
-  const allowedFields = [
-    "address",
-    "campus",
-    "roomnumber",
-    "roomtype",
-    "numrooms",
-    "numroommates",
-  ];
+  const requestFields = Object.keys(req.body || {});
+  const unknownFields = requestFields.filter((field) => !LISTING_FIELDS.includes(field));
+  if (unknownFields.length > 0) {
+    return res.status(400).json({ error: `Unknown field: ${unknownFields[0]}` });
+  }
 
   const updatePayload = {};
-  for (const field of allowedFields) {
+  for (const field of LISTING_FIELDS) {
     if (Object.prototype.hasOwnProperty.call(req.body, field)) {
       updatePayload[field] = req.body[field];
     }
@@ -130,33 +187,32 @@ router.patch("/listings/:postid", async (req, res) => {
   }
 
   if (Object.prototype.hasOwnProperty.call(updatePayload, "address")) {
-    if (typeof updatePayload.address !== "string" || !updatePayload.address.trim()) {
-      return res.status(400).json({ error: "Address is required" });
+    const addressResult = normalizeRequiredString(updatePayload.address, "Address");
+    if (addressResult.error) {
+      return res.status(400).json({ error: addressResult.error });
     }
-    updatePayload.address = updatePayload.address.trim();
+    updatePayload.address = addressResult.value;
   }
 
   const nullableStringFields = ["campus", "roomnumber", "roomtype"];
   for (const field of nullableStringFields) {
     if (Object.prototype.hasOwnProperty.call(updatePayload, field)) {
-      if (updatePayload[field] === null) continue;
-      if (typeof updatePayload[field] !== "string") {
-        return res.status(400).json({ error: `${field} must be a string or null` });
+      const stringResult = normalizeOptionalString(updatePayload[field], field);
+      if (stringResult.error) {
+        return res.status(400).json({ error: stringResult.error });
       }
-      updatePayload[field] = updatePayload[field].trim();
-      if (updatePayload[field] === "") {
-        updatePayload[field] = null;
-      }
+      updatePayload[field] = stringResult.value;
     }
   }
 
   const numericFields = ["numrooms", "numroommates"];
   for (const field of numericFields) {
     if (Object.prototype.hasOwnProperty.call(updatePayload, field)) {
-      if (updatePayload[field] === null) continue;
-      if (!Number.isInteger(updatePayload[field]) || updatePayload[field] < 0) {
-        return res.status(400).json({ error: `${field} must be a non-negative integer or null` });
+      const numericResult = normalizeOptionalNonNegativeInteger(updatePayload[field], field);
+      if (numericResult.error) {
+        return res.status(400).json({ error: numericResult.error });
       }
+      updatePayload[field] = numericResult.value;
     }
   }
 
