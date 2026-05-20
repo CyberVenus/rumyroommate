@@ -312,6 +312,57 @@ router.post("/listings/:postid/save", async (req, res) => {
   }
 });
 
+// DELETE /api/listings/:postid/save
+router.delete("/listings/:postid/save", async (req, res) => {
+  if (!req.session || !req.session.user) {
+    return res.status(401).json({ error: "Not authenticated" });
+  }
+
+  const userid = req.session.user.userid;
+  const postid = Number(req.params.postid);
+
+  if (!Number.isInteger(postid) || postid <= 0) {
+    return res.status(400).json({ error: "Invalid listing id" });
+  }
+
+  let connection;
+  try {
+    connection = await getPool().getConnection();
+
+    const [listingRows] = await connection.query(
+      `SELECT postid FROM createdroommatelistings WHERE postid = ?`,
+      [postid],
+    );
+
+    if (listingRows.length === 0) {
+      return res.status(404).json({ error: "Listing not found" });
+    }
+
+    const [result] = await connection.query(
+      `
+      DELETE FROM savedroommatelistings
+      WHERE userid = ? AND postid = ?
+      `,
+      [userid, postid],
+    );
+
+    if (result.affectedRows > 0) {
+      return res.status(200).json({
+        message: "Listing unsaved successfully",
+      });
+    }
+
+    return res.status(200).json({
+      message: "Listing already unsaved",
+    });
+  } catch (error) {
+    console.error("Unsave listing error:", error);
+    return res.status(500).json({ error: "Failed to unsave listing" });
+  } finally {
+    if (connection) connection.release();
+  }
+});
+
 // GET /api/saved-listings
 router.get("/saved-listings", async (req, res) => {
   if (!req.session || !req.session.user) {
