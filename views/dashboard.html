@@ -85,28 +85,58 @@
         return data?.error || fallback;
       }
 
+      function setSaveButtonState(button, isSaved) {
+        button.dataset.saved = isSaved ? "true" : "false";
+        button.classList.toggle("btn-primary", !isSaved);
+        button.classList.toggle("btn-outline-secondary", isSaved);
+        button.textContent = isSaved ? "Unsave" : "Save";
+      }
+
       function attachSaveListingHandlers() {
         document.querySelectorAll(".save-listing-btn").forEach((button) => {
           button.addEventListener("click", async () => {
             const postid = button.dataset.postid;
+            const isCurrentlySaved = button.dataset.saved === "true";
+            const method = isCurrentlySaved ? "DELETE" : "POST";
+
+            button.disabled = true;
 
             try {
               const response = await fetch(`/api/listings/${postid}/save`, {
-                method: "POST",
+                method,
                 credentials: "include",
               });
 
-              const data = await response.json();
+              const data = await response.json().catch(() => ({}));
 
-              if (response.ok) {
-                button.textContent = "Saved";
-                button.disabled = true;
+              if (!response.ok) {
+                showDashboardAlert(
+                  mapErrorMessage(response, data, `Failed to ${isCurrentlySaved ? "unsave" : "save"} listing.`),
+                  "danger",
+                );
+                button.disabled = false;
+                return;
+              }
+
+              const nextSaved = !isCurrentlySaved;
+              setSaveButtonState(button, nextSaved);
+              button.disabled = false;
+
+              if (nextSaved) {
+                if (!dashboardState.savedPostIds.includes(postid)) {
+                  dashboardState.savedPostIds = [...dashboardState.savedPostIds, postid];
+                }
+                showDashboardAlert("Listing saved.", "success");
               } else {
-                alert(data.error || "Failed to save listing");
+                dashboardState.savedPostIds = dashboardState.savedPostIds.filter(
+                  (savedId) => String(savedId) !== String(postid),
+                );
+                showDashboardAlert("Listing unsaved.", "success");
               }
             } catch (error) {
-              console.error("Save listing request error:", error);
-              alert("Server error");
+              console.error("Save/unsave listing request error:", error);
+              showDashboardAlert("Server error while updating saved state.", "danger");
+              button.disabled = false;
             }
           });
         });
@@ -284,13 +314,13 @@
                       </div>
                     `
                       : `
-                      <strong>Save Listing:</strong>
+                      <strong>${isSaved ? "Saved Listing:" : "Save Listing:"}</strong>
                       <button
-                        class="btn btn-sm ${isSaved ? "btn-secondary" : "btn-primary"} save-listing-btn"
+                        class="btn btn-sm ${isSaved ? "btn-outline-secondary" : "btn-primary"} save-listing-btn"
                         data-postid="${listing.postid}"
-                        ${isSaved ? "disabled" : ""}
+                        data-saved="${isSaved ? "true" : "false"}"
                       >
-                        ${isSaved ? "Saved" : "Save Listing"}
+                        ${isSaved ? "Unsave" : "Save"}
                       </button>
                     `
                   }
