@@ -2,4 +2,8 @@ sqlDatabaseSecrets.js
 node_modules/
 .env
 database/dumps/
-cookies.txt
+
+scripts/dev-env.sh
+owner-cookies.txt
+cam-cookies.txt
+sephora-cookies.txt
