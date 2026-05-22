@@ -157,6 +157,15 @@ npm run dev
 
 ---
 
+
+## 📘 API Contract Cleanup (PR-012)
+
+Core API contracts are now documented in:
+
+- `docs/api-contract.md`
+
+This is a docs-first contract pass: stable response payloads are preserved, intentional inconsistencies are documented, and no frontend-breaking envelope redesign was introduced.
+
 ## ✅ First-Run Verification Checklist
 
 After startup, verify:
