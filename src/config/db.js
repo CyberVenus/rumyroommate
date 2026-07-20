@@ -31,4 +31,11 @@ function getPool() {
   return pool;
 }
 
-module.exports = { initDb, getPool };
+async function closeDb() {
+  if (pool) {
+    await pool.end();
+    pool = null;
+  }
+}
+
+module.exports = { initDb, getPool, closeDb };

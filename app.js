@@ -1,5 +1,4 @@
 const express = require("express");
-const mysql = require("mysql2/promise");
 const bcrypt = require("bcrypt");
 const session = require("express-session");
 const path = require("path");
@@ -13,58 +12,29 @@ const requireAuth = require("./src/middleware/requireAuth");
 const healthRouter = require("./src/routes/health.routes");
 const listingsRouter = require("./src/routes/listings.routes");
 
-const app = express();
-const PORT = Number(process.env.PORT || 3000);
-const isProduction = process.env.NODE_ENV === "production";
+function getDbConfigFromEnv() {
+  return {
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    port: Number(process.env.DB_PORT || 3306),
+  };
+}
 
-// Database configuration
-const dbConfig = {
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  port: Number(process.env.DB_PORT || 3306),
-};
-
-// Get local IP address
 function getLocalIP() {
   const interfaces = os.networkInterfaces();
   for (const name of Object.keys(interfaces)) {
-    for (const interface of interfaces[name]) {
+    for (const networkInterface of interfaces[name]) {
       // Skip internal and non-IPv4 addresses
-      if (interface.internal || interface.family !== "IPv4") {
+      if (networkInterface.internal || networkInterface.family !== "IPv4") {
         continue;
       }
-      return interface.address;
+      return networkInterface.address;
     }
   }
   return "localhost";
 }
-
-// Middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(express.static("public"));
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      secure: isProduction,
-      httpOnly: true,
-      sameSite: "lax",
-      maxAge: 24 * 60 * 60 * 1000, // 24 hours
-    },
-  }),
-);
-
-app.use("/api/health", healthRouter);
-app.use("/api", listingsRouter);
-// function validateNetId(netId) {
-//   const netIdRegex = /^[a-zA-Z0-9._%+-]+@(?:scarletmail\.)?rutgers\.edu$/;
-//   return netIdRegex.test(netId);
-// }
 
 function validateNetId(email) {
   if (typeof email !== "string") return false;
@@ -80,431 +50,335 @@ function validateNetId(email) {
   return emailRegex.test(trimmed);
 }
 
-// Routes
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "views", "frontpage.html"));
-});
+function createApp() {
+  const app = express();
+  const isProduction = process.env.NODE_ENV === "production";
 
-app.get("/register", (req, res) => {
-  res.sendFile(path.join(__dirname, "views", "register.html"));
-});
+  // Middleware
+  app.use(express.json());
+  app.use(express.urlencoded({ extended: true }));
+  app.use(express.static("public"));
+  app.use(
+    session({
+      secret: process.env.SESSION_SECRET,
+      resave: false,
+      saveUninitialized: false,
+      cookie: {
+        secure: isProduction,
+        httpOnly: true,
+        sameSite: "lax",
+        maxAge: 24 * 60 * 60 * 1000, // 24 hours
+      },
+    }),
+  );
 
-app.get("/login", (req, res) => {
-  res.sendFile(path.join(__dirname, "views", "login.html"));
-});
+  app.use("/api/health", healthRouter);
+  app.use("/api", listingsRouter);
 
-app.get("/profile", (req, res) => {
-  res.sendFile(path.join(__dirname, "views", "profile.html"));
-});
+  // Routes
+  app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, "views", "frontpage.html"));
+  });
 
-app.get("/dashboard", (req, res) => {
-  if (!req.session.user) {
-    return res.redirect("/login");
-  }
-  res.sendFile(path.join(__dirname, "views", "dashboard.html"));
-});
+  app.get("/register", (req, res) => {
+    res.sendFile(path.join(__dirname, "views", "register.html"));
+  });
 
-app.get("/create-listing", (req, res) => {
-  if (!req.session.user) {
-    return res.redirect("/login");
-  }
-  res.sendFile(path.join(__dirname, "views", "createlisting.html"));
-});
+  app.get("/login", (req, res) => {
+    res.sendFile(path.join(__dirname, "views", "login.html"));
+  });
 
-// Serve preferences page
-app.get("/preferences", (req, res) => {
-  if (!req.session.user) {
-    return res.redirect("/login");
-  }
-  res.sendFile(path.join(__dirname, "views", "preferences.html"));
-});
-// API endpoints
-app.post("/api/register", async (req, res) => {
-  const {
-    netid,
-    password,
-    realname = null,
-    age = null,
+  app.get("/profile", (req, res) => {
+    res.sendFile(path.join(__dirname, "views", "profile.html"));
+  });
 
-    // optional account/profile fields
-    gender,
-    ethnicity,
-    religion,
-    major,
+  app.get("/dashboard", (req, res) => {
+    if (!req.session.user) {
+      return res.redirect("/login");
+    }
+    res.sendFile(path.join(__dirname, "views", "dashboard.html"));
+  });
 
-    // optional roommate preference fields
-    prefgender,
-    prefrace,
-    prefreligion,
-    prefmajor,
-    prefsmoking,
-    prefdrinking,
+  app.get("/create-listing", (req, res) => {
+    if (!req.session.user) {
+      return res.redirect("/login");
+    }
+    res.sendFile(path.join(__dirname, "views", "createlisting.html"));
+  });
 
-    // optional habit fields
-    cleanliness,
-    noisetolerance,
-    sleephabits,
-    sleepstarttime,
-    sleependtime,
-    studystarttime,
-    studyendtime,
-    sharedstarttime,
-    sharedendtime,
-    smoking,
-    drinking,
+  // Serve preferences page
+  app.get("/preferences", (req, res) => {
+    if (!req.session.user) {
+      return res.redirect("/login");
+    }
+    res.sendFile(path.join(__dirname, "views", "preferences.html"));
+  });
+  // API endpoints
+  app.post("/api/register", async (req, res) => {
+    const {
+      netid,
+      password,
+      realname = null,
+      age = null,
 
-    // optional roommate preference numeric fields
-    roombudget,
-    preflowtemp,
-    prefhightemp,
-    prefguestfreq,
-  } = req.body;
+      // optional account/profile fields
+      gender,
+      ethnicity,
+      religion,
+      major,
 
-  // Basic required checks
-  if (!netid || !password) {
-    return res.status(400).json({ error: "NetID and password are required." });
-  }
+      // optional roommate preference fields
+      prefgender,
+      prefrace,
+      prefreligion,
+      prefmajor,
+      prefsmoking,
+      prefdrinking,
 
-  // NetID must match Rutgers email format
-  if (!validateNetId(netid)) {
-    return res.status(400).json({
-      error:
-        "Invalid NetID format. Use @rutgers.edu or @scarletmail.rutgers.edu",
-    });
-  }
+      // optional habit fields
+      cleanliness,
+      noisetolerance,
+      sleephabits,
+      sleepstarttime,
+      sleependtime,
+      studystarttime,
+      studyendtime,
+      sharedstarttime,
+      sharedendtime,
+      smoking,
+      drinking,
 
-  // Password strength
-  const passwordRegex =
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-  if (!passwordRegex.test(password)) {
-    return res.status(400).json({
-      error:
-        "Password must be 8+ chars and include uppercase, lowercase, number, and special (@$!%*?&).",
-    });
-  }
+      // optional roommate preference numeric fields
+      roombudget,
+      preflowtemp,
+      prefhightemp,
+      prefguestfreq,
+    } = req.body;
 
-  // Age check (your table has CHECK age >= 18)
-  const ageNum = age === "" || age === undefined ? null : Number(age);
-  if (ageNum !== null && (!Number.isInteger(ageNum) || ageNum < 18)) {
-    return res.status(400).json({ error: "Age must be an integer >= 18." });
-  }
+    // Basic required checks
+    if (!netid || !password) {
+      return res.status(400).json({ error: "NetID and password are required." });
+    }
 
-  let conn;
-  try {
-    conn = await getPool().getConnection();
-    await conn.beginTransaction();
+    // NetID must match Rutgers email format
+    if (!validateNetId(netid)) {
+      return res.status(400).json({
+        error:
+          "Invalid NetID format. Use @rutgers.edu or @scarletmail.rutgers.edu",
+      });
+    }
 
-    // 1) Insert into useraccounts
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // Password strength
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    if (!passwordRegex.test(password)) {
+      return res.status(400).json({
+        error:
+          "Password must be 8+ chars and include uppercase, lowercase, number, and special (@$!%*?&).",
+      });
+    }
 
-    const [result] = await conn.query(
-      `
+    // Age check (your table has CHECK age >= 18)
+    const ageNum = age === "" || age === undefined ? null : Number(age);
+    if (ageNum !== null && (!Number.isInteger(ageNum) || ageNum < 18)) {
+      return res.status(400).json({ error: "Age must be an integer >= 18." });
+    }
+
+    let conn;
+    try {
+      conn = await getPool().getConnection();
+      await conn.beginTransaction();
+
+      // 1) Insert into useraccounts
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      const [result] = await conn.query(
+        `
       INSERT INTO useraccounts (
         netid, password, realname, age, gender, ethnicity, religion, major
       )
       VALUES (?, ?, ?, ?, ?, ?, ?, ?)
       `,
-      [
-        netid,
-        hashedPassword,
-        realname,
-        ageNum,
-        gender ?? null,
-        ethnicity ?? null,
-        religion ?? null,
-        major ?? null,
-      ],
-    );
+        [
+          netid,
+          hashedPassword,
+          realname,
+          ageNum,
+          gender ?? null,
+          ethnicity ?? null,
+          religion ?? null,
+          major ?? null,
+        ],
+      );
 
-    const userid = result.insertId;
+      const userid = result.insertId;
 
-    // 2) Insert into userpreferences (roommate preference fields)
-    await conn.query(
-      `
-      INSERT INTO userpreferences (
-        userid, prefgender, prefrace, prefreligion, prefmajor, prefsmoking,
-        prefdrinking, roombudget, preflowtemp, prefhightemp, prefguestfreq
-      )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `,
-      [
-        userid,
-        prefgender ?? null,
-        prefrace ?? null,
-        prefreligion ?? null,
-        prefmajor ?? null,
-        prefsmoking ?? null,
-        prefdrinking ?? null,
-        roombudget ?? null,
-        preflowtemp ?? null,
-        prefhightemp ?? null,
-        prefguestfreq ?? null,
-      ],
-    );
+      // 2) Insert roommate preferences (only if at least one preference field present)
+      const prefProvided =
+        prefgender !== undefined ||
+        prefrace !== undefined ||
+        prefreligion !== undefined ||
+        prefmajor !== undefined ||
+        prefsmoking !== undefined ||
+        prefdrinking !== undefined ||
+        roombudget !== undefined ||
+        preflowtemp !== undefined ||
+        prefhightemp !== undefined ||
+        prefguestfreq !== undefined;
 
-    // 3) Insert into userhabits (lifestyle fields)
-    await conn.query(
-      `
-      INSERT INTO userhabits (
-        userid, cleanliness, noisetolerance, sleephabits, sleepstarttime,
-        sleependtime, studystarttime, studyendtime, sharedstarttime, sharedendtime,
-        smoking, drinking
-      )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `,
-      [
-        userid,
-        cleanliness ?? null,
-        noisetolerance ?? null,
-        sleephabits ?? null,
-        sleepstarttime ?? null,
-        sleependtime ?? null,
-        studystarttime ?? null,
-        studyendtime ?? null,
-        sharedstarttime ?? null,
-        sharedendtime ?? null,
-        smoking ?? null,
-        drinking ?? null,
-      ],
-    );
+      if (prefProvided) {
+        await conn.query(
+          `
+        INSERT INTO userpreferences (
+          userid, prefgender, prefrace, prefreligion, prefmajor,
+          prefsmoking, prefdrinking, roombudget, preflowtemp, prefhightemp, prefguestfreq
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `,
+          [
+            userid,
+            prefgender ?? null,
+            prefrace ?? null,
+            prefreligion ?? null,
+            prefmajor ?? null,
+            prefsmoking ?? null,
+            prefdrinking ?? null,
+            roombudget ?? null,
+            preflowtemp ?? null,
+            prefhightemp ?? null,
+            prefguestfreq ?? null,
+          ],
+        );
+      }
 
-    await conn.commit();
+      // 3) Insert habits (only if at least one habit field present)
+      const habitsProvided =
+        cleanliness !== undefined ||
+        noisetolerance !== undefined ||
+        sleephabits !== undefined ||
+        sleepstarttime !== undefined ||
+        sleependtime !== undefined ||
+        studystarttime !== undefined ||
+        studyendtime !== undefined ||
+        sharedstarttime !== undefined ||
+        sharedendtime !== undefined ||
+        smoking !== undefined ||
+        drinking !== undefined;
 
-    return res.status(201).json({
-      message: "Registration successful!",
-      userid,
-      netid,
-    });
-  } catch (error) {
-    if (conn) await conn.rollback();
+      if (habitsProvided) {
+        await conn.query(
+          `
+        INSERT INTO userhabits (
+          userid, cleanliness, noisetolerance, sleephabits,
+          sleepstarttime, sleependtime,
+          studystarttime, studyendtime,
+          sharedstarttime, sharedendtime,
+          smoking, drinking
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `,
+          [
+            userid,
+            cleanliness ?? null,
+            noisetolerance ?? null,
+            sleephabits ?? null,
+            sleepstarttime ?? null,
+            sleependtime ?? null,
+            studystarttime ?? null,
+            studyendtime ?? null,
+            sharedstarttime ?? null,
+            sharedendtime ?? null,
+            smoking ?? null,
+            drinking ?? null,
+          ],
+        );
+      }
 
-    // Duplicate NetID
-    if (error.code === "ER_DUP_ENTRY") {
-      return res.status(400).json({ error: "NetID already registered." });
+      await conn.commit();
+      return res.status(201).json({ message: "User registered successfully", userid });
+    } catch (err) {
+      if (conn) await conn.rollback();
+
+      if (err && err.code === "ER_DUP_ENTRY") {
+        return res.status(409).json({ error: "NetID is already registered." });
+      }
+
+      console.error("Registration error:", err);
+      return res.status(500).json({ error: "Registration failed." });
+    } finally {
+      if (conn) conn.release();
+    }
+  });
+
+  app.post("/api/login", async (req, res) => {
+    const { netid, password } = req.body;
+
+    if (!netid || !password) {
+      return res.status(400).json({ error: "NetID and password are required." });
     }
 
-    console.error("Registration error:", error);
-    return res.status(500).json({ error: "Error during registration." });
-  } finally {
-    if (conn) conn.release();
-  }
-});
+    try {
+      const [rows] = await getPool().query(
+        "SELECT userid, netid, password, realname, age FROM useraccounts WHERE netid = ? LIMIT 1",
+        [netid],
+      );
 
-app.post("/api/login", async (req, res) => {
-  // 1️⃣ Extract credentials sent from frontend
-  const { netid, password } = req.body;
+      if (rows.length === 0) {
+        return res.status(401).json({ error: "Invalid credentials." });
+      }
 
-  // 2️⃣ Basic validation (avoid unnecessary DB query)
-  if (!netid || !password) {
-    return res.status(400).json({
-      error: "NetID and password are required.",
-    });
-  }
+      const user = rows[0];
+      const match = await bcrypt.compare(password, user.password);
+      if (!match) {
+        return res.status(401).json({ error: "Invalid credentials." });
+      }
 
-  let connection; // declare outside so we can release in finally
+      req.session.user = {
+        userid: user.userid,
+        netid: user.netid,
+      };
 
-  try {
-    // 3️⃣ Get a connection from the MySQL pool
-    connection = await getPool().getConnection();
-
-    // 4️⃣ Query the user by NetID (never query by password)
-    const [users] = await connection.query(
-      "SELECT userid, netid, password, realname, age FROM useraccounts WHERE netid = ?",
-      [netid],
-    );
-
-    // 5️⃣ If no user found → authentication fails
-    if (users.length === 0) {
-      return res.status(401).json({
-        error: "Invalid NetID or password.",
+      return res.json({
+        message: "Login successful",
+        user: {
+          userid: user.userid,
+          netid: user.netid,
+          realname: user.realname,
+          age: user.age,
+        },
       });
+    } catch (err) {
+      console.error("Login error:", err);
+      return res.status(500).json({ error: "Login failed." });
     }
+  });
 
-    // 6️⃣ Extract the single user object
-    const user = users[0];
-
-    // 7️⃣ Compare plaintext password with hashed password in DB
-    const validPassword = await bcrypt.compare(password, user.password);
-
-    if (!validPassword) {
-      return res.status(401).json({
-        error: "Invalid NetID or password.",
-      });
+  app.get("/api/me", (req, res) => {
+    if (!req.session.user) {
+      return res.status(401).json({ error: "Not authenticated" });
     }
+    return res.json({ user: req.session.user });
+  });
 
-    // 8️⃣ Store minimal safe user info in session (NEVER store password)
-    req.session.user = {
-      userid: user.userid,
-      netid: user.netid,
-      realname: user.realname,
-      age: user.age,
-    };
+  app.get("/api/user-data", requireAuth, async (req, res) => {
+    const userid = req.session.user.userid;
 
-    // 9️⃣ Send success response back to frontend
-    return res.json({
-      message: "Login successful!",
-      netid: user.netid,
-      userid: user.userid,
-    });
-  } catch (error) {
-    console.error("Login error:", error);
-    return res.status(500).json({
-      error: "Error during login.",
-    });
-  } finally {
-    // 🔟 Always release the DB connection back to pool
-    if (connection) connection.release();
-  }
-});
-
-app.post("/api/update-preferences", requireAuth, async (req, res) => {
-  const userid = req.session.user.userid;
-
-  // 2️⃣ Extract grouped fields from request body
-  const { personal = {}, habits = {}, roommatePreferences = {} } = req.body;
-
-  // 3️⃣ Personal/account fields
-  const gender = personal.gender ?? null;
-  const ethnicity = personal.ethnicity ?? null;
-  const religion = personal.religion ?? null;
-  const major = personal.major ?? null;
-
-  // 4️⃣ Roommate preference fields
-  const prefgender = roommatePreferences.prefgender ?? null;
-  const prefrace = roommatePreferences.prefrace ?? null;
-  const prefreligion = roommatePreferences.prefreligion ?? null;
-  const prefmajor = roommatePreferences.prefmajor ?? null;
-  const prefsmoking = roommatePreferences.prefsmoking ?? null;
-  const prefdrinking = roommatePreferences.prefdrinking ?? null;
-  const roombudget = roommatePreferences.roombudget ?? null;
-  const preflowtemp = roommatePreferences.preflowtemp ?? null;
-  const prefhightemp = roommatePreferences.prefhightemp ?? null;
-  const prefguestfreq = roommatePreferences.prefguestfreq ?? null;
-
-  // 5️⃣ Habit fields
-  const cleanliness = habits.cleanliness ?? null;
-  const noisetolerance = habits.noisetolerance ?? null;
-  const sleephabits = habits.sleephabits ?? null;
-  const sleepstarttime = habits.sleepstarttime ?? null;
-  const sleependtime = habits.sleependtime ?? null;
-  const studystarttime = habits.studystarttime ?? null;
-  const studyendtime = habits.studyendtime ?? null;
-  const sharedstarttime = habits.sharedstarttime ?? null;
-  const sharedendtime = habits.sharedendtime ?? null;
-  const smoking = habits.smoking ?? null;
-  const drinking = habits.drinking ?? null;
-
-  let connection;
-
-  try {
-    connection = await getPool().getConnection();
-    await connection.beginTransaction();
-
-    // 6️⃣ Update user's own profile/account info
-    await connection.query(
-      `
-      UPDATE useraccounts SET
-        gender = ?,
-        ethnicity = ?,
-        religion = ?,
-        major = ?
-      WHERE userid = ?
-      `,
-      [gender, ethnicity, religion, major, userid],
-    );
-
-    // 7️⃣ Update roommate preferences
-    await connection.query(
-      `
-      UPDATE userpreferences SET
-        prefgender = ?,
-        prefrace = ?,
-        prefreligion = ?,
-        prefmajor = ?,
-        prefsmoking = ?,
-        prefdrinking = ?,
-        roombudget = ?,
-        preflowtemp = ?,
-        prefhightemp = ?,
-        prefguestfreq = ?
-      WHERE userid = ?
-      `,
-      [
-        prefgender,
-        prefrace,
-        prefreligion,
-        prefmajor,
-        prefsmoking,
-        prefdrinking,
-        roombudget,
-        preflowtemp,
-        prefhightemp,
-        prefguestfreq,
-        userid,
-      ],
-    );
-
-    // 8️⃣ Update user habits
-    await connection.query(
-      `
-      UPDATE userhabits SET
-        cleanliness = ?,
-        noisetolerance = ?,
-        sleephabits = ?,
-        sleepstarttime = ?,
-        sleependtime = ?,
-        studystarttime = ?,
-        studyendtime = ?,
-        sharedstarttime = ?,
-        sharedendtime = ?,
-        smoking = ?,
-        drinking = ?
-      WHERE userid = ?
-      `,
-      [
-        cleanliness,
-        noisetolerance,
-        sleephabits,
-        sleepstarttime,
-        sleependtime,
-        studystarttime,
-        studyendtime,
-        sharedstarttime,
-        sharedendtime,
-        smoking,
-        drinking,
-        userid,
-      ],
-    );
-
-    await connection.commit();
-    return res.json({ message: "Preferences updated successfully." });
-  } catch (error) {
-    if (connection) await connection.rollback();
-    console.error("Update preferences error:", error);
-    return res.status(500).json({ error: "Failed to update preferences." });
-  } finally {
-    if (connection) connection.release();
-  }
-});
-
-app.get("/api/user-data", requireAuth, async (req, res) => {
-  try {
-    const { userid } = req.session.user;
-
-    // Pull account/personal info
-    const [accountRows] = await getPool().query(
-      `
+    try {
+      // Pull account core + profile fields
+      const [accountRows] = await getPool().query(
+        `
       SELECT userid, netid, realname, age, gender, ethnicity, religion, major
       FROM useraccounts
       WHERE userid = ?
       `,
-      [userid],
-    );
+        [userid],
+      );
 
-    // Pull roommate preferences
-    const [prefRows] = await getPool().query(
-      `
+      if (!accountRows.length) {
+        return res.status(404).json({ error: "User not found." });
+      }
+
+      // Pull roommate prefs
+      const [prefRows] = await getPool().query(
+        `
       SELECT
         prefgender,
         prefrace,
@@ -519,12 +393,12 @@ app.get("/api/user-data", requireAuth, async (req, res) => {
       FROM userpreferences
       WHERE userid = ?
       `,
-      [userid],
-    );
+        [userid],
+      );
 
-    // Pull habits
-    const [habitRows] = await getPool().query(
-      `
+      // Pull habits
+      const [habitRows] = await getPool().query(
+        `
       SELECT
         cleanliness,
         noisetolerance,
@@ -540,87 +414,99 @@ app.get("/api/user-data", requireAuth, async (req, res) => {
       FROM userhabits
       WHERE userid = ?
       `,
-      [userid],
-    );
+        [userid],
+      );
 
-    const a = accountRows[0] || {};
-    const p = prefRows[0] || {};
-    const h = habitRows[0] || {};
+      const a = accountRows[0] || {};
+      const p = prefRows[0] || {};
+      const h = habitRows[0] || {};
 
-    return res.json({
-      userid: a.userid ?? userid,
-      netid: a.netid ?? null,
-      realname: a.realname ?? null,
-      age: a.age ?? null,
+      return res.json({
+        userid: a.userid ?? userid,
+        netid: a.netid ?? null,
+        realname: a.realname ?? null,
+        age: a.age ?? null,
 
-      personal: {
-        gender: a.gender ?? null,
-        ethnicity: a.ethnicity ?? null,
-        religion: a.religion ?? null,
-        major: a.major ?? null,
-      },
+        personal: {
+          gender: a.gender ?? null,
+          ethnicity: a.ethnicity ?? null,
+          religion: a.religion ?? null,
+          major: a.major ?? null,
+        },
 
-      habits: {
-        cleanliness: h.cleanliness ?? null,
-        noisetolerance: h.noisetolerance ?? null,
-        sleephabits: h.sleephabits ?? null,
-        sleepstarttime: h.sleepstarttime ?? null,
-        sleependtime: h.sleependtime ?? null,
-        studystarttime: h.studystarttime ?? null,
-        studyendtime: h.studyendtime ?? null,
-        sharedstarttime: h.sharedstarttime ?? null,
-        sharedendtime: h.sharedendtime ?? null,
-        smoking: h.smoking ?? null,
-        drinking: h.drinking ?? null,
-      },
+        habits: {
+          cleanliness: h.cleanliness ?? null,
+          noisetolerance: h.noisetolerance ?? null,
+          sleephabits: h.sleephabits ?? null,
+          sleepstarttime: h.sleepstarttime ?? null,
+          sleependtime: h.sleependtime ?? null,
+          studystarttime: h.studystarttime ?? null,
+          studyendtime: h.studyendtime ?? null,
+          sharedstarttime: h.sharedstarttime ?? null,
+          sharedendtime: h.sharedendtime ?? null,
+          smoking: h.smoking ?? null,
+          drinking: h.drinking ?? null,
+        },
 
-      roommatePreferences: {
-        prefgender: p.prefgender ?? null,
-        prefrace: p.prefrace ?? null,
-        prefreligion: p.prefreligion ?? null,
-        prefmajor: p.prefmajor ?? null,
-        prefsmoking: p.prefsmoking ?? null,
-        prefdrinking: p.prefdrinking ?? null,
-        roombudget: p.roombudget ?? null,
-        preflowtemp: p.preflowtemp ?? null,
-        prefhightemp: p.prefhightemp ?? null,
-        prefguestfreq: p.prefguestfreq ?? null,
-      },
-    });
-  } catch (err) {
-    console.error("User data fetch error:", err);
-    return res.status(500).json({ error: "Failed to fetch user data." });
-  }
-});
-
-app.post("/api/logout", (req, res) => {
-  req.session.destroy((err) => {
-    if (err) {
-      console.error("Logout error:", err);
-      return res.status(500).json({ error: "Logout failed." });
+        roommatePreferences: {
+          prefgender: p.prefgender ?? null,
+          prefrace: p.prefrace ?? null,
+          prefreligion: p.prefreligion ?? null,
+          prefmajor: p.prefmajor ?? null,
+          prefsmoking: p.prefsmoking ?? null,
+          prefdrinking: p.prefdrinking ?? null,
+          roombudget: p.roombudget ?? null,
+          preflowtemp: p.preflowtemp ?? null,
+          prefhightemp: p.prefhightemp ?? null,
+          prefguestfreq: p.prefguestfreq ?? null,
+        },
+      });
+    } catch (err) {
+      console.error("User data fetch error:", err);
+      return res.status(500).json({ error: "Failed to fetch user data." });
     }
-
-    res.clearCookie("connect.sid", {
-      httpOnly: true,
-      secure: isProduction,
-      sameSite: "lax",
-    });
-
-    return res.json({ message: "Logged out successfully." });
   });
-});
 
-// ✅ Start the server (initialize db, then listen)
-initDb(dbConfig)
-  .then(() => {
-    const localIP = getLocalIP();
-    app.listen(PORT, "0.0.0.0", () => {
-      console.log(`Server running at:`);
-      console.log(`- Local: http://localhost:${PORT}`);
-      console.log(`- Network: http://${localIP}:${PORT}`);
+  app.post("/api/logout", (req, res) => {
+    req.session.destroy((err) => {
+      if (err) {
+        console.error("Logout error:", err);
+        return res.status(500).json({ error: "Logout failed." });
+      }
+
+      res.clearCookie("connect.sid", {
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: "lax",
+      });
+
+      return res.json({ message: "Logged out successfully." });
     });
-  })
-  .catch((err) => {
+  });
+
+  return app;
+}
+
+async function startServer() {
+  const app = createApp();
+  const PORT = Number(process.env.PORT || 3000);
+  const dbConfig = getDbConfigFromEnv();
+
+  await initDb(dbConfig);
+
+  const localIP = getLocalIP();
+  return app.listen(PORT, "0.0.0.0", () => {
+    console.log("Server running at:");
+    console.log(`- Local: http://localhost:${PORT}`);
+    console.log(`- Network: http://${localIP}:${PORT}`);
+  });
+}
+
+if (require.main === module) {
+  startServer().catch((err) => {
     console.error("Failed to start server:", err);
     process.exit(1);
   });
+}
+
+module.exports = { createApp, startServer, getDbConfigFromEnv };
