@@ -194,11 +194,11 @@ function createApp() {
 
       const [result] = await conn.query(
         `
-      INSERT INTO useraccounts (
-        netid, password, realname, age, gender, ethnicity, religion, major
-      )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-      `,
+        INSERT INTO useraccounts (
+          netid, password, realname, age, gender, ethnicity, religion, major
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        `,
         [
           netid,
           hashedPassword,
@@ -213,101 +213,77 @@ function createApp() {
 
       const userid = result.insertId;
 
-      // 2) Insert roommate preferences (only if at least one preference field present)
-      const prefProvided =
-        prefgender !== undefined ||
-        prefrace !== undefined ||
-        prefreligion !== undefined ||
-        prefmajor !== undefined ||
-        prefsmoking !== undefined ||
-        prefdrinking !== undefined ||
-        roombudget !== undefined ||
-        preflowtemp !== undefined ||
-        prefhightemp !== undefined ||
-        prefguestfreq !== undefined;
-
-      if (prefProvided) {
-        await conn.query(
-          `
+      // 2) Insert into userpreferences (roommate preference fields)
+      await conn.query(
+        `
         INSERT INTO userpreferences (
-          userid, prefgender, prefrace, prefreligion, prefmajor,
-          prefsmoking, prefdrinking, roombudget, preflowtemp, prefhightemp, prefguestfreq
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          userid, prefgender, prefrace, prefreligion, prefmajor, prefsmoking,
+          prefdrinking, roombudget, preflowtemp, prefhightemp, prefguestfreq
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `,
-          [
-            userid,
-            prefgender ?? null,
-            prefrace ?? null,
-            prefreligion ?? null,
-            prefmajor ?? null,
-            prefsmoking ?? null,
-            prefdrinking ?? null,
-            roombudget ?? null,
-            preflowtemp ?? null,
-            prefhightemp ?? null,
-            prefguestfreq ?? null,
-          ],
-        );
-      }
+        [
+          userid,
+          prefgender ?? null,
+          prefrace ?? null,
+          prefreligion ?? null,
+          prefmajor ?? null,
+          prefsmoking ?? null,
+          prefdrinking ?? null,
+          roombudget ?? null,
+          preflowtemp ?? null,
+          prefhightemp ?? null,
+          prefguestfreq ?? null,
+        ],
+      );
 
-      // 3) Insert habits (only if at least one habit field present)
-      const habitsProvided =
-        cleanliness !== undefined ||
-        noisetolerance !== undefined ||
-        sleephabits !== undefined ||
-        sleepstarttime !== undefined ||
-        sleependtime !== undefined ||
-        studystarttime !== undefined ||
-        studyendtime !== undefined ||
-        sharedstarttime !== undefined ||
-        sharedendtime !== undefined ||
-        smoking !== undefined ||
-        drinking !== undefined;
-
-      if (habitsProvided) {
-        await conn.query(
-          `
+      // 3) Insert into userhabits (lifestyle fields)
+      await conn.query(
+        `
         INSERT INTO userhabits (
-          userid, cleanliness, noisetolerance, sleephabits,
-          sleepstarttime, sleependtime,
-          studystarttime, studyendtime,
-          sharedstarttime, sharedendtime,
+          userid, cleanliness, noisetolerance, sleephabits, sleepstarttime,
+          sleependtime, studystarttime, studyendtime, sharedstarttime, sharedendtime,
           smoking, drinking
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `,
-          [
-            userid,
-            cleanliness ?? null,
-            noisetolerance ?? null,
-            sleephabits ?? null,
-            sleepstarttime ?? null,
-            sleependtime ?? null,
-            studystarttime ?? null,
-            studyendtime ?? null,
-            sharedstarttime ?? null,
-            sharedendtime ?? null,
-            smoking ?? null,
-            drinking ?? null,
-          ],
-        );
-      }
+        [
+          userid,
+          cleanliness ?? null,
+          noisetolerance ?? null,
+          sleephabits ?? null,
+          sleepstarttime ?? null,
+          sleependtime ?? null,
+          studystarttime ?? null,
+          studyendtime ?? null,
+          sharedstarttime ?? null,
+          sharedendtime ?? null,
+          smoking ?? null,
+          drinking ?? null,
+        ],
+      );
 
       await conn.commit();
-      return res.status(201).json({ message: "User registered successfully", userid });
-    } catch (err) {
+
+      return res.status(201).json({
+        message: "Registration successful!",
+        userid,
+        netid,
+      });
+    } catch (error) {
       if (conn) await conn.rollback();
 
-      if (err && err.code === "ER_DUP_ENTRY") {
-        return res.status(409).json({ error: "NetID is already registered." });
+      // Duplicate NetID
+      if (error.code === "ER_DUP_ENTRY") {
+        return res.status(400).json({ error: "NetID already registered." });
       }
 
-      console.error("Registration error:", err);
-      return res.status(500).json({ error: "Registration failed." });
+      console.error("Registration error:", error);
+      return res.status(500).json({ error: "Error during registration." });
     } finally {
       if (conn) conn.release();
     }
   });
-
   app.post("/api/login", async (req, res) => {
     const { netid, password } = req.body;
 
@@ -356,6 +332,137 @@ function createApp() {
       return res.status(401).json({ error: "Not authenticated" });
     }
     return res.json({ user: req.session.user });
+  });
+
+  app.post("/api/update-preferences", requireAuth, async (req, res) => {
+    const userid = req.session.user.userid;
+
+    // 2️⃣ Extract grouped fields from request body
+    const { personal = {}, habits = {}, roommatePreferences = {} } = req.body;
+
+    // 3️⃣ Personal/account fields
+    const gender = personal.gender ?? null;
+    const ethnicity = personal.ethnicity ?? null;
+    const religion = personal.religion ?? null;
+    const major = personal.major ?? null;
+
+    // 4️⃣ Roommate preference fields
+    const prefgender = roommatePreferences.prefgender ?? null;
+    const prefrace = roommatePreferences.prefrace ?? null;
+    const prefreligion = roommatePreferences.prefreligion ?? null;
+    const prefmajor = roommatePreferences.prefmajor ?? null;
+    const prefsmoking = roommatePreferences.prefsmoking ?? null;
+    const prefdrinking = roommatePreferences.prefdrinking ?? null;
+    const roombudget = roommatePreferences.roombudget ?? null;
+    const preflowtemp = roommatePreferences.preflowtemp ?? null;
+    const prefhightemp = roommatePreferences.prefhightemp ?? null;
+    const prefguestfreq = roommatePreferences.prefguestfreq ?? null;
+
+    // 5️⃣ Habit fields
+    const cleanliness = habits.cleanliness ?? null;
+    const noisetolerance = habits.noisetolerance ?? null;
+    const sleephabits = habits.sleephabits ?? null;
+    const sleepstarttime = habits.sleepstarttime ?? null;
+    const sleependtime = habits.sleependtime ?? null;
+    const studystarttime = habits.studystarttime ?? null;
+    const studyendtime = habits.studyendtime ?? null;
+    const sharedstarttime = habits.sharedstarttime ?? null;
+    const sharedendtime = habits.sharedendtime ?? null;
+    const smoking = habits.smoking ?? null;
+    const drinking = habits.drinking ?? null;
+
+    let connection;
+
+    try {
+      connection = await getPool().getConnection();
+      await connection.beginTransaction();
+
+      // 6️⃣ Update user's own profile/account info
+      await connection.query(
+        `
+        UPDATE useraccounts SET
+          gender = ?,
+          ethnicity = ?,
+          religion = ?,
+          major = ?
+        WHERE userid = ?
+        `,
+        [gender, ethnicity, religion, major, userid],
+      );
+
+      // 7️⃣ Update roommate preferences
+      await connection.query(
+        `
+        UPDATE userpreferences SET
+          prefgender = ?,
+          prefrace = ?,
+          prefreligion = ?,
+          prefmajor = ?,
+          prefsmoking = ?,
+          prefdrinking = ?,
+          roombudget = ?,
+          preflowtemp = ?,
+          prefhightemp = ?,
+          prefguestfreq = ?
+        WHERE userid = ?
+        `,
+        [
+          prefgender,
+          prefrace,
+          prefreligion,
+          prefmajor,
+          prefsmoking,
+          prefdrinking,
+          roombudget,
+          preflowtemp,
+          prefhightemp,
+          prefguestfreq,
+          userid,
+        ],
+      );
+
+      // 8️⃣ Update user habits
+      await connection.query(
+        `
+        UPDATE userhabits SET
+          cleanliness = ?,
+          noisetolerance = ?,
+          sleephabits = ?,
+          sleepstarttime = ?,
+          sleependtime = ?,
+          studystarttime = ?,
+          studyendtime = ?,
+          sharedstarttime = ?,
+          sharedendtime = ?,
+          smoking = ?,
+          drinking = ?
+        WHERE userid = ?
+        `,
+        [
+          cleanliness,
+          noisetolerance,
+          sleephabits,
+          sleepstarttime,
+          sleependtime,
+          studystarttime,
+          studyendtime,
+          sharedstarttime,
+          sharedendtime,
+          smoking,
+          drinking,
+          userid,
+        ],
+      );
+
+      await connection.commit();
+      return res.json({ message: "Preferences updated successfully." });
+    } catch (error) {
+      if (connection) await connection.rollback();
+      console.error("Update preferences error:", error);
+      return res.status(500).json({ error: "Failed to update preferences." });
+    } finally {
+      if (connection) connection.release();
+    }
   });
 
   app.get("/api/user-data", requireAuth, async (req, res) => {

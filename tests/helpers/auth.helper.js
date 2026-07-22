@@ -8,11 +8,14 @@ async function createTestUser(app, overrides = {}) {
   const netid = overrides.netid || uniqueNetId();
   const password = overrides.password || "TestPass1!";
 
-  await request(app).post("/api/register").send({
-    netid,
-    password,
-    ...overrides,
-  });
+  await request(app)
+    .post("/api/register")
+    .send({
+      netid,
+      password,
+      ...overrides,
+    })
+    .expect(201);
 
   return { netid, password };
 }
