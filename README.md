@@ -158,6 +158,51 @@ npm run dev
 ---
 
 
+
+## 🧪 API Test Harness (PR-013)
+
+The canonical API integration test harness is now **Jest + Supertest**.
+
+### One-command test run
+
+```bash
+npm test
+```
+
+### Test environment setup (safe + isolated)
+
+1. Copy test env template:
+
+```bash
+cp .env.test.example .env.test
+```
+
+2. Update `.env.test` with your local MySQL test credentials.
+
+3. Ensure `DB_NAME` points to an isolated test database (for example: `rumyroommate_test`).
+
+4. Initialize the test database schema and migrations manually (same order as normal setup), but targeting the test database.
+
+The harness includes safety guardrails: test startup fails fast unless `DB_NAME` includes `test`, to reduce accidental dev DB mutation.
+
+### Test data lifecycle
+
+- DB pool initializes once before tests.
+- Data tables are truncated after each test.
+- DB pool closes after the test run.
+
+### Shared helpers for future API suites
+
+Reusable helpers are available in `tests/helpers/auth.helper.js` for:
+
+- creating test users
+- logging in test users
+- preserving authenticated session cookies via Supertest agent
+
+> This PR intentionally adds only harness infrastructure + a minimal smoke test. Full auth/listings/saved-listings suites are deferred to PR-014/015/016.
+
+---
+
 ## 📘 API Contract Cleanup (PR-012)
 
 Core API contracts are now documented in:
