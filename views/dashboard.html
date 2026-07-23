@@ -43,7 +43,11 @@
                   >
                 </div>
                 <div class="card-body">
-                  <div id="dashboardAlert" class="alert d-none" role="alert"></div>
+                  <div
+                    id="dashboardAlert"
+                    class="alert d-none"
+                    role="alert"
+                  ></div>
                   <div id="listingsContainer">
                     <p class="text-muted mb-0">Loading listings...</p>
                   </div>
@@ -90,9 +94,11 @@
 
       function mapErrorMessage(response, data, fallback) {
         if (response.status === 401) return "Please log in again and retry.";
-        if (response.status === 403) return "You are not allowed to modify this listing.";
+        if (response.status === 403)
+          return "You are not allowed to modify this listing.";
         if (response.status === 404) return "This listing no longer exists.";
-        if (response.status >= 500) return "Server error. Please try again in a moment.";
+        if (response.status >= 500)
+          return "Server error. Please try again in a moment.";
         return data?.error || fallback;
       }
 
@@ -122,7 +128,11 @@
 
               if (!response.ok) {
                 showDashboardAlert(
-                  mapErrorMessage(response, data, `Failed to ${isCurrentlySaved ? "unsave" : "save"} listing.`),
+                  mapErrorMessage(
+                    response,
+                    data,
+                    `Failed to ${isCurrentlySaved ? "unsave" : "save"} listing.`,
+                  ),
                   "danger",
                 );
                 button.disabled = false;
@@ -135,20 +145,27 @@
 
               if (nextSaved) {
                 if (!dashboardState.savedPostIds.includes(postid)) {
-                  dashboardState.savedPostIds = [...dashboardState.savedPostIds, postid];
+                  dashboardState.savedPostIds = [
+                    ...dashboardState.savedPostIds,
+                    postid,
+                  ];
                 }
                 showDashboardAlert("Listing saved.", "success");
               } else {
-                dashboardState.savedPostIds = dashboardState.savedPostIds.filter(
-                  (savedId) => String(savedId) !== String(postid),
-                );
+                dashboardState.savedPostIds =
+                  dashboardState.savedPostIds.filter(
+                    (savedId) => String(savedId) !== String(postid),
+                  );
                 showDashboardAlert("Listing unsaved.", "success");
               }
 
               refreshSavedListings();
             } catch (error) {
               console.error("Save/unsave listing request error:", error);
-              showDashboardAlert("Server error while updating saved state.", "danger");
+              showDashboardAlert(
+                "Server error while updating saved state.",
+                "danger",
+              );
               button.disabled = false;
             }
           });
@@ -171,7 +188,9 @@
         document.querySelectorAll(".delete-listing-btn").forEach((button) => {
           button.addEventListener("click", async () => {
             const postid = button.dataset.postid;
-            const confirmed = window.confirm("Are you sure you want to delete this listing?");
+            const confirmed = window.confirm(
+              "Are you sure you want to delete this listing?",
+            );
             if (!confirmed) return;
 
             button.disabled = true;
@@ -197,7 +216,10 @@
             } catch (error) {
               console.error("Delete listing request error:", error);
               button.disabled = false;
-              showDashboardAlert("Server error while deleting listing.", "danger");
+              showDashboardAlert(
+                "Server error while deleting listing.",
+                "danger",
+              );
             }
           });
         });
@@ -212,13 +234,22 @@
 
             if (nextAddress === null) return;
             if (!nextAddress.trim()) {
-              showDashboardAlert("Address is required to update listing.", "danger");
+              showDashboardAlert(
+                "Address is required to update listing.",
+                "danger",
+              );
               return;
             }
 
-            const nextCampus = window.prompt("Update campus (optional)", currentCampus);
+            const nextCampus = window.prompt(
+              "Update campus (optional)",
+              currentCampus,
+            );
             if (nextCampus === null) return;
-            const nextRoomtype = window.prompt("Update room type (optional)", currentRoomtype);
+            const nextRoomtype = window.prompt(
+              "Update room type (optional)",
+              currentRoomtype,
+            );
             if (nextRoomtype === null) return;
 
             button.disabled = true;
@@ -249,11 +280,18 @@
               const listings = await fetch("/api/listings", {
                 credentials: "include",
               }).then((r) => r.json());
-              renderListings(listings, dashboardState.currentUserId, dashboardState.savedPostIds);
+              renderListings(
+                listings,
+                dashboardState.currentUserId,
+                dashboardState.savedPostIds,
+              );
               showDashboardAlert("Listing updated successfully.", "success");
             } catch (error) {
               console.error("Edit listing request error:", error);
-              showDashboardAlert("Server error while updating listing.", "danger");
+              showDashboardAlert(
+                "Server error while updating listing.",
+                "danger",
+              );
               button.disabled = false;
             }
           });
@@ -370,7 +408,8 @@
         }
 
         container.innerHTML = safeListings
-          .map((listing) => `
+          .map(
+            (listing) => `
             <div class="card mb-3 shadow-sm" data-saved-listing-id="${listing.postid}">
               <div class="card-body">
                 <div class="d-flex justify-content-between align-items-start mb-2">
@@ -394,7 +433,8 @@
                 </div>
               </div>
             </div>
-          `)
+          `,
+          )
           .join("");
       }
 
@@ -407,7 +447,11 @@
           const data = await response.json().catch(() => ({}));
 
           if (!response.ok) {
-            const message = mapErrorMessage(response, data, "Failed to load saved listings.");
+            const message = mapErrorMessage(
+              response,
+              data,
+              "Failed to load saved listings.",
+            );
             container.innerHTML = `<p class="text-danger mb-0">${message}</p>`;
             return;
           }
@@ -454,7 +498,9 @@
           const savedIdsData = await savedIdsResponse.json();
 
           if (!savedIdsResponse.ok) {
-            throw new Error(savedIdsData.error || "Failed to load saved listing ids");
+            throw new Error(
+              savedIdsData.error || "Failed to load saved listing ids",
+            );
           }
 
           const listings = await fetch("/api/listings", {

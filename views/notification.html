@@ -1,82 +1,105 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Roommate Notifications</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 40px;
-    }
+  <head>
+    <meta charset="UTF-8" />
+    <title>Roommate Notifications</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 40px;
+      }
 
-    #notification-container {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      z-index: 1000;
-    }
+      #notification-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1000;
+      }
 
-    .notification {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      background-color: #444;
-      color: white;
-      padding: 15px 20px;
-      margin-top: 10px;
-      border-radius: 8px;
-      opacity: 1;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-      transition: opacity 0.5s ease, transform 0.5s ease;
-      transform: translateY(0);
-    }
+      .notification {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background-color: #444;
+        color: white;
+        padding: 15px 20px;
+        margin-top: 10px;
+        border-radius: 8px;
+        opacity: 1;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        transition:
+          opacity 0.5s ease,
+          transform 0.5s ease;
+        transform: translateY(0);
+      }
 
-    .notification.hide {
-      opacity: 0;
-      transform: translateY(-20px);
-    }
+      .notification.hide {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
 
-    .match { background-color: #4CAF50; }       /* if there is a match the Green will be shown */
-    .message { background-color: #2196F3; }     /*a message will be shown Blue */
-    .recommendation { background-color: #FF9800; } /* Orange */
+      .match {
+        background-color: #4caf50;
+      } /* if there is a match the Green will be shown */
+      .message {
+        background-color: #2196f3;
+      } /*a message will be shown Blue */
+      .recommendation {
+        background-color: #ff9800;
+      } /* Orange */
 
-    button {
-      margin-right: 15px;
-      padding: 10px 16px;
-      font-size: 16px;
-    }
-  </style>
-</head>
-<body>
+      button {
+        margin-right: 15px;
+        padding: 10px 16px;
+        font-size: 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Roommate Site Notifications</h2>
 
-  <h2>Roommate Site Notifications</h2>
+    <button
+      onclick="showNotification('🎉 You matched with a new roommate!', 'match')"
+    >
+      Simulate Match
+    </button>
+    <button onclick="showMessageNotification('Alex')">
+      Simulate Message from Alex
+    </button>
+    <button onclick="showMessageNotification('Jamie')">
+      Simulate Message from Jamie
+    </button>
+    <button
+      onclick="
+        showNotification(
+          '🌟 New recommended roommate based on your preferences!',
+          'recommendation',
+        )
+      "
+    >
+      Simulate Recommendation
+    </button>
 
-  <button onclick="showNotification('🎉 You matched with a new roommate!', 'match')">Simulate Match</button>
-  <button onclick="showMessageNotification('Alex')">Simulate Message from Alex</button>
-  <button onclick="showMessageNotification('Jamie')">Simulate Message from Jamie</button>
-  <button onclick="showNotification('🌟 New recommended roommate based on your preferences!', 'recommendation')">Simulate Recommendation</button>
+    <div id="notification-container"></div>
 
-  <div id="notification-container"></div>
+    <script>
+      function showNotification(message, type) {
+        const container = document.getElementById("notification-container");
+        const notif = document.createElement("div");
+        notif.className = `notification ${type}`;
+        notif.textContent = message;
+        container.appendChild(notif);
 
-  <script>
-    function showNotification(message, type) {
-      const container = document.getElementById('notification-container');
-      const notif = document.createElement('div');
-      notif.className = `notification ${type}`;
-      notif.textContent = message;
-      container.appendChild(notif);
+        setTimeout(() => {
+          notif.classList.add("hide");
+          setTimeout(() => notif.remove(), 500);
+        }, 4000);
+      }
 
-      setTimeout(() => {
-        notif.classList.add('hide');
-        setTimeout(() => notif.remove(), 500);
-      }, 4000);
-    }
-
-    function showMessageNotification(sender) {
-      const message = `💬 New message from ${sender}!`;
-      showNotification(message, 'message');
-    }
-  </script>
-
-</body>
+      function showMessageNotification(sender) {
+        const message = `💬 New message from ${sender}!`;
+        showNotification(message, "message");
+      }
+    </script>
+  </body>
 </html>

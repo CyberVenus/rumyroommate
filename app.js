@@ -157,7 +157,9 @@ function createApp() {
 
     // Basic required checks
     if (!netid || !password) {
-      return res.status(400).json({ error: "NetID and password are required." });
+      return res
+        .status(400)
+        .json({ error: "NetID and password are required." });
     }
 
     // NetID must match Rutgers email format
@@ -179,7 +181,8 @@ function createApp() {
     }
 
     // Age check (your table has CHECK age >= 18)
-    const ageNum = age === "" || age === undefined ? null : Number(age);
+    const ageNum =
+      age === "" || age === undefined || age === null ? null : Number(age);
     if (ageNum !== null && (!Number.isInteger(ageNum) || ageNum < 18)) {
       return res.status(400).json({ error: "Age must be an integer >= 18." });
     }
@@ -288,7 +291,9 @@ function createApp() {
     const { netid, password } = req.body;
 
     if (!netid || !password) {
-      return res.status(400).json({ error: "NetID and password are required." });
+      return res
+        .status(400)
+        .json({ error: "NetID and password are required." });
     }
 
     try {

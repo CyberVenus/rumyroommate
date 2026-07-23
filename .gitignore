@@ -1,8 +1,9 @@
 sqlDatabaseSecrets.js
 node_modules/
 .env
+.env.test
 database/dumps/
-
+database/schema.test.sql
 scripts/dev-env.sh
 owner-cookies.txt
 cam-cookies.txt

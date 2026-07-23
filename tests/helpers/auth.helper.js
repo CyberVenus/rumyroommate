@@ -1,7 +1,8 @@
 const request = require("supertest");
 
 function uniqueNetId() {
-  return `testuser_${Date.now()}_${Math.floor(Math.random() * 100000)}@rutgers.edu`;
+  const suffix = `${Date.now()}${Math.floor(Math.random() * 1000)}`.slice(-6);
+  return `t${suffix}@rutgers.edu`;
 }
 
 async function createTestUser(app, overrides = {}) {
