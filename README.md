@@ -24,13 +24,21 @@ This is an active development project.
 
 ---
 
+## Documentation
+
+- [MVP Roadmap](docs/roadmap.md)
+- [Detailed MVP Tracking Board](docs/planning/mvp-tracking-board.md)
+- [API Contract](docs/api-contract.md)
+
+---
+
 ## 🧠 What This Application Does
 
 RU My Roommate is a preference-based roommate matchmaking system designed to:
 
 - Match students based on lifestyle preferences
 - Allow listing creation and discovery
-- Allow users to save annd manage roommate listings
+- Allow users to save and manage roommate listings
 - Provide preference-driven filtering
 - Authenticate users via Rutgers NetID
 
@@ -55,7 +63,7 @@ RU My Roommate is a preference-based roommate matchmaking system designed to:
 
 ### Testing
 
-- Jasmine (backend test coverage)
+- Jest + Supertest API integration test harness
 
 ---
 
@@ -169,6 +177,13 @@ The canonical API integration test harness is now **Jest + Supertest**.
 npm test
 ```
 
+Additional test commands:
+
+```bash
+npm run test:watch  # Run Jest in watch mode
+npm run test:smoke  # Run the API smoke-test suite
+```
+
 ### Test environment setup (safe + isolated)
 
 1. Copy test env template:
@@ -199,7 +214,7 @@ Reusable helpers are available in `tests/helpers/auth.helper.js` for:
 - logging in test users
 - preserving authenticated session cookies via Supertest agent
 
-> This PR intentionally adds only harness infrastructure + a minimal smoke test. Full auth/listings/saved-listings suites are deferred to PR-014/015/016.
+Current automated coverage includes the API smoke test and a preferences regression suite. Comprehensive auth, listings, and saved-listings API suites remain planned as PR-014, PR-015, and PR-016.
 
 ---
 
