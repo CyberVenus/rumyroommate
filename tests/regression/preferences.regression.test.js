@@ -65,24 +65,24 @@ describe("registration and preferences regression coverage", () => {
         },
       })
       .expect(200)
-      .expect({ message: "Preferences updated successfully." });
+      .expect({ data: { message: "Preferences updated successfully." } });
 
     const response = await agent.get("/api/user-data").expect(200);
 
-    expect(response.body.personal).toMatchObject({
+    expect(response.body.data.personal).toMatchObject({
       gender: "Female",
       ethnicity: "Asian",
       religion: "None",
       major: "Computer Science",
     });
-    expect(response.body.habits).toMatchObject({
+    expect(response.body.data.habits).toMatchObject({
       cleanliness: 8,
       noisetolerance: 4,
       sleephabits: "Night Owl",
       smoking: "N",
       drinking: "Y",
     });
-    expect(response.body.roommatePreferences).toMatchObject({
+    expect(response.body.data.roommatePreferences).toMatchObject({
       prefgender: "Any",
       prefrace: "Any",
       prefreligion: "Any",
