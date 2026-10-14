@@ -214,7 +214,7 @@ Reusable helpers are available in `tests/helpers/auth.helper.js` for:
 - logging in test users
 - preserving authenticated session cookies via Supertest agent
 
-Current automated coverage includes the API smoke test and a preferences regression suite. Comprehensive auth, listings, and saved-listings API suites remain planned as PR-014, PR-015, and PR-016.
+Current automated coverage includes the API smoke test, a preferences regression suite, and focused PR-012 response-contract checks. Comprehensive auth, listings, and saved-listings API suites remain planned as PR-014, PR-015, and PR-016.
 
 ---
 
@@ -224,7 +224,7 @@ Core API contracts are now documented in:
 
 - `docs/api-contract.md`
 
-This is a docs-first contract pass: stable response payloads are preserved, intentional inconsistencies are documented, and no frontend-breaking envelope redesign was introduced.
+All successful API responses use `{ "data": ... }`; errors use `{ "error": "..." }`. Read success payloads from `body.data`, including the listings array. Duplicate registration returns `409`. The bundled frontend is updated for this contract; external clients must migrate their success-payload readers. See the API contract for endpoint payloads, status codes, and migration details.
 
 ## ✅ First-Run Verification Checklist
 
@@ -232,7 +232,7 @@ After startup, verify:
 
 1. Server boots without DB initialization errors.
 2. `http://localhost:3000` loads the front page.
-3. `http://localhost:3000/api/health/db` returns `{ "ok": true, ... }` and table list.
+3. `http://localhost:3000/api/health/db` returns `{ "data": { "tables": [...] } }`.
 4. Register a user from `/register` and confirm success response.
 5. Log in from `/login` and confirm redirect to `/dashboard`.
 

@@ -1,4 +1,5 @@
 const express = require("express");
+const { success } = require("../http/respond");
 // const { getListings } = require("../../mainpage/getListings");
 const { getPool } = require("../config/db");
 const requireAuth = require("../middleware/requireAuth");
@@ -67,7 +68,7 @@ router.get("/listings", async (req, res) => {
       `,
     );
 
-    return res.json(rows);
+    return success(res, rows);
   } catch (error) {
     console.error("Get listings error:", error);
     return res.status(500).json({ error: "Failed to fetch listings" });
@@ -141,10 +142,10 @@ router.post("/listings", requireAuth, async (req, res) => {
       ],
     );
 
-    return res.status(201).json({
+    return success(res, {
       message: "Listing created successfully",
       postid: result.insertId,
-    });
+    }, 201);
   } catch (error) {
     console.error("Create listing error:", error);
     return res.status(500).json({ error: "Failed to create listing" });
@@ -235,7 +236,7 @@ router.patch("/listings/:postid", requireAuth, async (req, res) => {
       [...values, postid],
     );
 
-    return res.json({
+    return success(res, {
       message: "Listing updated successfully",
       postid,
     });
@@ -278,7 +279,7 @@ router.delete("/listings/:postid", requireAuth, async (req, res) => {
       [postid],
     );
 
-    return res.json({
+    return success(res, {
       message: "Listing deleted successfully",
       postid,
     });
@@ -341,10 +342,10 @@ router.post("/listings/:postid/save", requireAuth, async (req, res) => {
       [userid, postid],
     );
 
-    return res.status(201).json({
+    return success(res, {
       message: "Listing saved successfully",
       saveid: result.insertId,
-    });
+    }, 201);
   } catch (error) {
     console.error("Save listing error:", error);
     return res.status(500).json({ error: "Failed to save listing" });
@@ -384,12 +385,12 @@ router.delete("/listings/:postid/save", requireAuth, async (req, res) => {
     );
 
     if (result.affectedRows > 0) {
-      return res.status(200).json({
+      return success(res, {
         message: "Listing unsaved successfully",
       });
     }
 
-    return res.status(200).json({
+    return success(res, {
       message: "Listing already unsaved",
     });
   } catch (error) {
@@ -434,7 +435,7 @@ router.get("/saved-listings", requireAuth, async (req, res) => {
       [userid],
     );
 
-    return res.json({
+    return success(res, {
       message: rows.length === 0 ? "No saved listings found" : "Success",
       listings: rows,
     });
@@ -464,7 +465,7 @@ router.get("/saved-listing-ids", requireAuth, async (req, res) => {
       [userid],
     );
 
-    return res.json({
+    return success(res, {
       savedPostIds: rows.map((row) => Number(row.postid)),
     });
   } catch (error) {

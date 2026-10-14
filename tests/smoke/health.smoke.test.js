@@ -6,7 +6,7 @@ describe("API smoke tests", () => {
     const app = createApp();
     const response = await request(app).get("/api/health/db").expect(200);
 
-    expect(response.body).toHaveProperty("ok", true);
-    expect(Array.isArray(response.body.tables)).toBe(true);
+    expect(Object.keys(response.body)).toEqual(["data"]);
+    expect(Array.isArray(response.body.data.tables)).toBe(true);
   });
 });

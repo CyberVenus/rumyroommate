@@ -35,7 +35,7 @@ async function loadNavbar(activeRoute) {
     });
 
     if (authRes.ok) {
-      user = await authRes.json();
+      user = (await authRes.json()).data;
     }
   } catch (_) {
     user = null;

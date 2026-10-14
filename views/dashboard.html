@@ -279,7 +279,11 @@
 
               const listings = await fetch("/api/listings", {
                 credentials: "include",
-              }).then((r) => r.json());
+              }).then(async (r) => {
+                const body = await r.json();
+                if (!r.ok) throw new Error(body.error || "Failed to load listings");
+                return body.data;
+              });
               renderListings(
                 listings,
                 dashboardState.currentUserId,
@@ -456,7 +460,7 @@
             return;
           }
 
-          renderSavedListings(data.listings);
+          renderSavedListings(data.data.listings);
         } catch (error) {
           console.error("Failed to load saved listings:", error);
           container.innerHTML = `<p class="text-danger mb-0">Failed to load saved listings.</p>`;
@@ -505,10 +509,14 @@
 
           const listings = await fetch("/api/listings", {
             credentials: "include",
-          }).then((r) => r.json());
+          }).then(async (r) => {
+                const body = await r.json();
+                if (!r.ok) throw new Error(body.error || "Failed to load listings");
+                return body.data;
+              });
 
-          const safeSavedIds = Array.isArray(savedIdsData.savedPostIds)
-            ? savedIdsData.savedPostIds
+          const safeSavedIds = Array.isArray(savedIdsData.data.savedPostIds)
+            ? savedIdsData.data.savedPostIds
             : [];
 
           dashboardState = {

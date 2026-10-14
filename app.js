@@ -1,4 +1,5 @@
 const express = require("express");
+const { success } = require("./src/http/respond");
 const bcrypt = require("bcrypt");
 const session = require("express-session");
 const path = require("path");
@@ -268,17 +269,17 @@ function createApp() {
 
       await conn.commit();
 
-      return res.status(201).json({
+      return success(res, {
         message: "Registration successful!",
         userid,
         netid,
-      });
+      }, 201);
     } catch (error) {
       if (conn) await conn.rollback();
 
       // Duplicate NetID
       if (error.code === "ER_DUP_ENTRY") {
-        return res.status(400).json({ error: "NetID already registered." });
+        return res.status(409).json({ error: "NetID already registered." });
       }
 
       console.error("Registration error:", error);
@@ -317,7 +318,7 @@ function createApp() {
         netid: user.netid,
       };
 
-      return res.json({
+      return success(res, {
         message: "Login successful",
         user: {
           userid: user.userid,
@@ -336,7 +337,7 @@ function createApp() {
     if (!req.session.user) {
       return res.status(401).json({ error: "Not authenticated" });
     }
-    return res.json({ user: req.session.user });
+    return success(res, { user: req.session.user });
   });
 
   app.post("/api/update-preferences", requireAuth, async (req, res) => {
@@ -460,7 +461,7 @@ function createApp() {
       );
 
       await connection.commit();
-      return res.json({ message: "Preferences updated successfully." });
+      return success(res, { message: "Preferences updated successfully." });
     } catch (error) {
       if (connection) await connection.rollback();
       console.error("Update preferences error:", error);
@@ -533,7 +534,7 @@ function createApp() {
       const p = prefRows[0] || {};
       const h = habitRows[0] || {};
 
-      return res.json({
+      return success(res, {
         userid: a.userid ?? userid,
         netid: a.netid ?? null,
         realname: a.realname ?? null,
@@ -592,8 +593,26 @@ function createApp() {
         sameSite: "lax",
       });
 
-      return res.json({ message: "Logged out successfully." });
+      return success(res, { message: "Logged out successfully." });
     });
+  });
+
+  app.use("/api", (req, res) => {
+    res.status(404).json({ error: "API endpoint not found" });
+  });
+
+  // Keep parser and unexpected API errors in the same JSON contract.
+  app.use((err, req, res, next) => {
+    if (req.path !== "/api" && !req.path.startsWith("/api/")) return next(err);
+    if (res.headersSent) return next(err);
+    const status = err.status >= 400 && err.status < 500 ? err.status : 500;
+    const messages = {
+      400: "Invalid request body",
+      413: "Request body too large",
+      415: "Unsupported request encoding or charset",
+    };
+    if (status === 500) console.error("API error:", err);
+    return res.status(status).json({ error: messages[status] || "Internal server error" });
   });
 
   return app;
