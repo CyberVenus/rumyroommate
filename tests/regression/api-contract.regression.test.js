@@ -3,18 +3,7 @@ const { createApp } = require("../../app");
 const { getPool } = require("../../src/config/db");
 const { createAndLogin } = require("../helpers/auth.helper");
 
-function data(response, status = 200) {
-  expect(response.status).toBe(status);
-  expect(response.headers["content-type"]).toMatch(/application\/json/);
-  expect(Object.keys(response.body)).toEqual(["data"]);
-  return response.body.data;
-}
-
-function error(response, status, message = expect.any(String)) {
-  expect(response.status).toBe(status);
-  expect(response.headers["content-type"]).toMatch(/application\/json/);
-  expect(response.body).toEqual({ error: message });
-}
+const { data, error } = require("../helpers/contract.helper");
 
 // Contract samples, not the comprehensive lifecycle suites planned for PR-014–016.
 describe("PR-012 API response contract", () => {

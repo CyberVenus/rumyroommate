@@ -214,7 +214,15 @@ Reusable helpers are available in `tests/helpers/auth.helper.js` for:
 - logging in test users
 - preserving authenticated session cookies via Supertest agent
 
-Current automated coverage includes the API smoke test, a preferences regression suite, and focused PR-012 response-contract checks. Comprehensive auth, listings, and saved-listings API suites remain planned as PR-014, PR-015, and PR-016.
+Current automated coverage includes the API smoke test, a preferences regression suite, focused PR-012 response-contract checks, and the PR-014 auth suite. Auth coverage verifies registration success and invalid/duplicate failures, login success and failure, session isolation, and protected-page redirects. The PR-012 checks cover all ten protected API endpoints without a session; both suites reuse the response assertions in `tests/helpers/contract.helper.js`. Listings and saved-listings lifecycle suites remain planned as PR-015 and PR-016.
+
+Run the focused auth cases together with their shared contract checks:
+
+```bash
+npm test -- tests/api/auth.test.js tests/regression/api-contract.regression.test.js
+```
+
+Run `npm test` twice consecutively to verify repeatability against the same isolated test database. Auth cases use fixed identities, fresh app/session instances, and the harness's per-test cleanup.
 
 ---
 
