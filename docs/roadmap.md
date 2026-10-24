@@ -9,9 +9,9 @@ This roadmap records implementation status verified against the current reposito
 
 ## Overall Progress
 
-- **Verified complete:** 12 of 19 planned PR items
-- **Completed milestones:** M1 — Core Feature Complete
-- **Remaining focus:** API response consistency, comprehensive API test suites, reproducible demo data, portfolio documentation, and deployment guidance
+- **Verified complete:** 13 of 19 planned PR items
+- **Completed milestones:** M1 — Core Feature Complete; M2 — Reliability Complete
+- **Remaining focus:** Comprehensive API test suites, reproducible demo data, portfolio documentation, and deployment guidance
 
 ## Foundation
 
@@ -37,11 +37,9 @@ This roadmap records implementation status verified against the current reposito
 
 - [x] **PR-010 — Listing validation hardening.** Create and edit payloads receive deterministic validation and normalization.
 - [x] **PR-011 — Session/auth hardening.** Cookie behavior is environment-aware, API auth failures are consistent, and logout destroys the session.
-- [ ] **PR-012 — API contract cleanup.**
+- [x] **PR-012 — API contract cleanup.** Core endpoints use `{ data }` success and `{ error }` failure envelopes. Status codes and frontend consumers are aligned, and the API contract is reviewed against real Express/MySQL responses in focused regression checks.
 
-  Current status: API documentation exists, but response envelopes remain inconsistent across the core API.
-
-**M2 Reliability Complete (PR-012): not reached.** PR-012 does not yet meet its original acceptance criteria.
+**M2 Reliability Complete (PR-012): reached.** PR-010 through PR-012 are verified.
 
 ## Automated API Testing
 

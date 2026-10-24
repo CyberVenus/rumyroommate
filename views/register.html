@@ -82,7 +82,7 @@
 
         if (res.ok) {
           document.getElementById("message").innerHTML =
-            `<div style="color:green;">${data.message}</div>`;
+            `<div style="color:green;">${data.data.message}</div>`;
           setTimeout(() => (window.location.href = "/login"), 1000);
         } else {
           document.getElementById("message").innerHTML =
