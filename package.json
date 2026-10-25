@@ -4,6 +4,8 @@
   "description": "A full-stack roommate matching platform for Rutgers students.",
   "main": "app.js",
   "scripts": {
+    "demo:seed": "node scripts/demo-data.js",
+    "demo:reset": "node scripts/demo-data.js --reset",
     "start": "node app.js",
     "dev": "nodemon app.js",
     "test": "jest --runInBand",

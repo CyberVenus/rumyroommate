@@ -167,6 +167,70 @@ npm run dev
 
 
 
+## Demo data (PR-017)
+
+After completing schema setup and migrations 001 through 004 above, seed the
+local development database configured in `.env`:
+
+```bash
+npm run demo:seed
+npm start
+```
+
+This creates three fictional users with hashed passwords and profile rows, two
+listings, and three saves. All three accounts use password `DemoPass1!`:
+
+- `demo1@rutgers.edu` (Alex): owns the College Avenue listing; no initial saves.
+- `demo2@rutgers.edu` (Jordan): owns the Busch listing; saves Alex's listing.
+- `demo3@rutgers.edu` (Taylor): owns no listing; saves both listings.
+
+These identities are reserved for the demo. Use only a local development database
+with fictional data; the credentials are public. The script refuses
+`NODE_ENV=production` and requires migration 004's saved-row cascade.
+It uses the same `DB_*` settings as the application; existing shell environment
+variables take precedence over `.env`.
+
+To restore the dataset after editing, deleting, or adding listings, stop the app
+and run:
+
+```bash
+npm run demo:reset
+npm start
+```
+
+Reset deletes and recreates the three reserved accounts, their habits/preferences,
+all listings they own, their saves, and notifications involving those accounts or
+listings. Other users' saves of demo listings are removed by the database cascade.
+Unrelated accounts, listings, saves, and notifications are preserved. Changes are
+transactional: a failure rolls back the reset. Plain `demo:seed` refuses to change
+existing demo identities; `demo:reset` explicitly opts into replacing their data
+and also works before the first seed. Do not run seeds/resets concurrently or while
+using the demo. Restarting clears in-memory sessions; log in again afterward.
+Numeric IDs and password hashes can change, but the demo content is reproduced.
+
+### Demo walkthrough
+
+1. Log in at `/login` as Alex. Open `/dashboard`, inspect the two listings and
+   empty saved state, and edit Alex's listing using the owner controls.
+2. Log out and log in as Jordan (or use a separate browser session). Alex's
+   listing starts saved; unsave and save it again. Owner controls appear only
+   on Jordan's listing. API edit/delete attempts against Alex's listing return `403`.
+3. Log in as Taylor to see both saved listings. Log back in as Alex and delete
+   Alex's listing. Refresh Jordan's and Taylor's dashboards: Jordan's saved view
+   is empty and Taylor retains only the Busch listing.
+4. As Alex, create a new listing through `/create-listing`, then log out. Run the
+   reset commands above to return to the original dataset.
+
+Automated verification uses the isolated test database described below:
+
+```bash
+npm test -- tests/api/demo-data.test.js
+```
+
+It exercises demo login, profile/browse, create/edit/delete, non-owner rejection,
+save/unsave, cascade cleanup, logout, repeated reset, unrelated-data preservation,
+rollback on failure, and the CLI commands. It does not automate browser interactions.
+
 ## 🧪 API Test Harness (PR-013)
 
 The canonical API integration test harness is now **Jest + Supertest**.

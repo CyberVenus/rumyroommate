@@ -9,9 +9,9 @@ This roadmap records implementation status verified against the current reposito
 
 ## Overall Progress
 
-- **Verified complete:** 16 of 19 planned PR items
+- **Verified complete:** 17 of 19 planned PR items
 - **Completed milestones:** M1 — Core Feature Complete; M2 — Reliability Complete; M3 — Quality Gate Complete
-- **Remaining focus:** Reproducible demo data, portfolio documentation, and deployment guidance
+- **Remaining focus:** Portfolio documentation and deployment guidance
 
 ## Foundation
 
@@ -52,12 +52,12 @@ This roadmap records implementation status verified against the current reposito
 
 ## Portfolio and Deployment Readiness
 
-- [ ] **PR-017 — Seed/demo data.** No reproducible MVP demo seed/reset script and instructions were found.
+- [x] **PR-017 — Seed/demo data.** `npm run demo:seed` and `npm run demo:reset` reproduce three demo users, two listings, and three saves. The README documents credentials, reset boundaries, and a demo walkthrough. Four integration cases verify the seeded API flow, repeated reset with unrelated-data preservation, transactional rollback, and CLI behavior/production refusal. All 75 tests across seven suites passed against the isolated MySQL test database; browser interactions were not automated.
 - [ ] **PR-018 — README polish and screenshots.**
 
-  Current status: Setup and API-test guidance exist, but current core-flow screenshots and seed instructions were not found.
+  Current status: Setup, API-test, and seed guidance exist, but current core-flow screenshots and a complete portfolio documentation review remain outstanding.
 - [ ] **PR-019 — Deployment-ready documentation.** No complete deployment runbook, environment table, and post-deploy smoke-test flow were found.
 
-**M4 Portfolio-Ready Complete (PR-019): not reached.** PR-017 through PR-019 remain incomplete or unverified.
+**M4 Portfolio-Ready Complete (PR-019): not reached.** PR-018 and PR-019 remain incomplete or unverified.
 
 For the original scope, acceptance criteria, dependencies, risks, and priorities, see the [detailed MVP tracking board](planning/mvp-tracking-board.md).
