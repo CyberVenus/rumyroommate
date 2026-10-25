@@ -1,82 +1,84 @@
-# 🏠 RU My Roommate
+# RU My Roommate
 
-A full-stack roommate matching platform for Rutgers students.
+A roommate-listing app for Rutgers students: create a housing listing, browse
+other students' listings, and keep a personal saved list. Originally developed
+for Software Engineering (14:332:452, Spring 2025), the current MVP focuses on
+owner permissions, saved-listing integrity, and tested API behavior.
 
-Originally developed as a Software Engineering course project (14:332:452, Spring 2025).  
-Now actively maintained and extended into a working, continuously evolving application.
+## MVP scope
 
----
+**Working in the canonical app:**
 
-## 🚀 Project Status
+- Local email/password registration, login, logout, and session-protected pages.
+- Listing creation and browsing; owners can edit and delete their own listings.
+- Save/unsave toggles and a saved-listings view, including an empty state.
+- Deleting a listing removes its dependent saves through a database cascade.
+- Profile, lifestyle-habit, and roommate-preference storage and editing.
+- Reproducible fictional demo data and Jest/Supertest API integration tests.
 
-This project has evolved from an academic prototype into an actively developed system focused on backend architecture, data handling, and application reliability.
+**Outside the current MVP:** automatic roommate matching/ranking, preference-based
+listing filtering, Rutgers SSO or verified student identity, messaging, and
+password recovery. The UI calls the email field “NetID,” but authentication uses
+locally stored bcrypt password hashes; the server accepts general email syntax.
+“Remember Me” stores the email locally for the next login; it does not extend the
+server session. “Forgot Password?” is a placeholder with no recovery flow.
 
-Current development focuses on:
+The app uses Express's in-memory session store. Restarting clears sessions.
+Deployment guidance is still tracked separately as PR-019; this README describes
+local evaluation, not a completed production deployment.
 
-- Refactoring backend architecture for modularity and scalability
-- Designing and implementing production-ready API endpoints
-- Improving authentication flow and session handling
-- Standardizing naming conventions and data models
-- Fixing UI/UX inconsistencies
-- Expanding backend validation and test coverage
+## Reviewer quick tour
 
-This is an active development project.
+1. Follow [local setup](#local-setup), then run `npm run demo:seed` and `npm start`.
+2. Open [the local login page](http://localhost:3000/login). All demo accounts use
+   password `DemoPass1!`; start with `demo1@rutgers.edu` (Alex).
+3. Follow the [demo walkthrough](#demo-walkthrough) to compare owner and non-owner
+   controls, save/unsave a listing, and verify deletion cleanup.
+4. Run [the API tests](#api-tests) against a separate test database.
 
----
+## Core-flow screenshots
 
-## Documentation
+Captured from the canonical app on October 25, 2026 with fictional PR-017 demo
+data. These are actual browser captures, not design mockups. The capture session
+used port 3001 and an isolated test database; normal local setup defaults to 3000.
 
-- [MVP Roadmap](docs/roadmap.md)
-- [Detailed MVP Tracking Board](docs/planning/mvp-tracking-board.md)
-- [API Contract](docs/api-contract.md)
+### Sign in
 
----
+![Login page with local email and password fields](docs/screenshots/login.jpg)
 
-## 🧠 What This Application Does
+### Browse and manage your listing
 
-RU My Roommate is a preference-based roommate matchmaking system designed to:
+Alex sees Edit/Delete only on his own listing and an empty Saved Listings section.
+The Edit action uses browser prompts for address, campus, and room type; Delete
+asks for confirmation.
 
-- Match students based on lifestyle preferences
-- Allow listing creation and discovery
-- Allow users to save and manage roommate listings
-- Provide preference-driven filtering
-- Authenticate users via Rutgers NetID
+![Alex dashboard with owner controls and empty saved state](docs/screenshots/owner-dashboard.jpg)
 
----
+### Create a listing
 
-## 🏗 Architecture Overview
+Address is required; the other fields are optional. This filled form was submitted
+successfully during capture.
 
-### Frontend
+![Create-listing form filled with fictional Livingston housing](docs/screenshots/create-listing.jpg)
 
-- HTML
-- Bootstrap 5
-- Custom CSS
-- Session-driven UI rendering
+### Save and unsave
 
-### Backend
+Jordan sees Alex's saved listing and owns the Busch listing. The additional
+Livingston listing was created during the preceding capture step.
 
-- Node.js
-- Express.js
-- MySQL
-- Session-based authentication
-- Modular route structure
+![Jordan dashboard with a saved listing and Unsave control](docs/screenshots/saved-listings.jpg)
 
-### Testing
+## Architecture and documentation
 
-- Jest + Supertest API integration test harness
+HTML, Bootstrap 5, and browser JavaScript provide the frontend. Node.js and
+Express serve pages and JSON APIs; MySQL stores accounts, habits, preferences,
+listings, and saves. Listing and health routes live under `src/routes/`;
+authentication and profile routes remain in `app.js`. The shared database pool
+is in `src/config/db.js`. Jest and Supertest exercise the real app with MySQL.
 
----
-
-## 🔧 Key Contributions
-
-- Refactored backend to use modular routing and centralized database access
-- Designed and implemented API endpoints (including Saved Listings feature)
-- Fixed authentication bugs (NetID handling)
-- Improved server-side validation and data integrity
-- Debugged and resolved system-level issues across authentication and data flow
-
-
----
+- [Verified roadmap](docs/roadmap.md)
+- [Original scope and acceptance criteria](docs/planning/mvp-tracking-board.md)
+- [Detailed API contract](docs/api-contract.md)
 
 ## ▶ Runtime Entrypoint (Canonical)
 
@@ -98,23 +100,36 @@ These legacy modules are retained for reference/history and should not be used f
 
 ---
 
-## 🛠 Setup (Fresh Clone)
+## Local setup
 
-Follow these steps in order for a clean local setup.
+Prerequisites: Node.js and npm (verified with Node 24), MySQL 8.0, and the MySQL
+command-line client on PATH. Run commands from the repository root. MySQL must
+be running and your database user must be able to create the local database and
+apply schema changes. Bootstrap assets load from a CDN, so full styling needs
+internet access.
+
+Follow these steps in order for a fresh local database. The schema contains DROP
+TABLE statements; do not import it over data you want to keep. Migrations 001–003
+are one-time changes, not commands to rerun at every startup.
 
 ### 1) Install dependencies
 
 ```bash
-npm install
+npm ci
 ```
 
 ### 2) Create local environment file
 
-Copy the example file and update values for your machine:
+Copy the example file and update values for your machine. If `.env` already
+exists, edit it instead; the copy command deliberately refuses to overwrite it:
 
 ```bash
-cp .env.example .env
+node -e "require('fs').copyFileSync('.env.example', '.env', require('fs').constants.COPYFILE_EXCL)"
 ```
+
+Edit `.env` with your local MySQL credentials and a long random `SESSION_SECRET`.
+Keep `DB_NAME=rumyroommate` for the SQL below. Existing shell environment variables
+override `.env`; keep development and test shells separate.
 
 Required environment keys:
 
@@ -131,20 +146,22 @@ Required environment keys:
 From the repo root:
 
 ```bash
-mysql -u <DB_USER> -p < database/schema.sql
+mysql -h 127.0.0.1 -P 3306 -u YOUR_DB_USER -p --execute="source database/schema.sql"
 ```
 
-This creates/uses the `rumyroommate` database and base tables.
+Replace `YOUR_DB_USER`, host, and port with your local settings; `-p` prompts for
+the password. These commands work in PowerShell and Bash. The schema creates/uses
+`rumyroommate`; the migration files also explicitly select that database.
 
 ### 4) Apply migrations (in order)
 
 Run migrations **in filename order**:
 
 ```bash
-mysql -u <DB_USER> -p < database/migrations/001_cleanup_userpreferences_legacy_columns.sql
-mysql -u <DB_USER> -p < database/migrations/002_make_listing_preferenceids_nullable.sql
-mysql -u <DB_USER> -p < database/migrations/003_make_savedroommatelistings_saveid_autoincrement.sql
-mysql -u <DB_USER> -p < database/migrations/004_set_saved_postid_on_delete_cascade.sql
+mysql -h 127.0.0.1 -P 3306 -u YOUR_DB_USER -p --execute="source database/migrations/001_cleanup_userpreferences_legacy_columns.sql"
+mysql -h 127.0.0.1 -P 3306 -u YOUR_DB_USER -p --execute="source database/migrations/002_make_listing_preferenceids_nullable.sql"
+mysql -h 127.0.0.1 -P 3306 -u YOUR_DB_USER -p --execute="source database/migrations/003_make_savedroommatelistings_saveid_autoincrement.sql"
+mysql -h 127.0.0.1 -P 3306 -u YOUR_DB_USER -p --execute="source database/migrations/004_set_saved_postid_on_delete_cascade.sql"
 ```
 
 Migration order is required because each migration assumes prior schema state.
@@ -231,7 +248,7 @@ It exercises demo login, profile/browse, create/edit/delete, non-owner rejection
 save/unsave, cascade cleanup, logout, repeated reset, unrelated-data preservation,
 rollback on failure, and the CLI commands. It does not automate browser interactions.
 
-## 🧪 API Test Harness (PR-013)
+## API tests
 
 The canonical API integration test harness is now **Jest + Supertest**.
 
@@ -253,14 +270,27 @@ npm run test:smoke  # Run the API smoke-test suite
 1. Copy test env template:
 
 ```bash
-cp .env.test.example .env.test
+node -e "require('fs').copyFileSync('.env.test.example', '.env.test', require('fs').constants.COPYFILE_EXCL)"
 ```
 
 2. Update `.env.test` with your local MySQL test credentials.
 
 3. Ensure `DB_NAME` points to an isolated test database (for example: `rumyroommate_test`).
 
-4. Initialize the test database schema and migrations manually (same order as normal setup), but targeting the test database.
+4. Initialize a fresh test database by generating a local SQL copy that changes
+   the hard-coded database name in both the schema and the four migrations:
+
+```bash
+node -e "const fs=require('fs'); const files=['database/schema.sql',...['001_cleanup_userpreferences_legacy_columns','002_make_listing_preferenceids_nullable','003_make_savedroommatelistings_saveid_autoincrement','004_set_saved_postid_on_delete_cascade'].map(n=>'database/migrations/'+n+'.sql')]; fs.writeFileSync('database/schema.test.sql',files.map(p=>fs.readFileSync(p,'utf8').replaceAll('rumyroommate','rumyroommate_test')).join('\n'))"
+mysql -h 127.0.0.1 -P 3306 -u YOUR_DB_USER -p --execute="source database/schema.test.sql"
+```
+
+Use `DB_NAME=rumyroommate_test` in `.env.test` for these commands. The generated
+`database/schema.test.sql` is gitignored. Passing a test database name to the
+MySQL client alone is insufficient: the original SQL contains explicit USE
+statements. Only import this generated file into a disposable test environment.
+Do not run tests while using that same database for an interactive demo; tests
+truncate its data after each case.
 
 The harness includes safety guardrails: test startup fails fast unless `DB_NAME` includes `test`, to reduce accidental dev DB mutation.
 
@@ -278,7 +308,7 @@ Reusable helpers are available in `tests/helpers/auth.helper.js` for:
 - logging in test users
 - preserving authenticated session cookies via Supertest agent
 
-Current automated coverage includes the API smoke test, a preferences regression suite, focused PR-012 response-contract checks, the PR-014 auth suite, the PR-015 listings suite, and the PR-016 saved-listings suite. Auth coverage verifies registration success and invalid/duplicate failures, login success and failure, session isolation, and protected-page redirects. The PR-012 checks cover all ten protected API endpoints without a session. The listings suite verifies creation/validation, persisted owner edits, owner deletion, non-owner rejection, and missing/deleted listings, including database state after successful and rejected mutations. These suites reuse the response assertions in `tests/helpers/contract.helper.js`. The saved-listings suite verifies save persistence, user isolation, duplicate/self-save rejection, idempotent unsave and re-save, and deletion cleanup across multiple users. It checks stored rows directly as well as both saved-results endpoints, including preservation of unrelated saves.
+Current automated coverage includes the PR-017 demo-data suite, the API smoke test, a preferences regression suite, focused PR-012 response-contract checks, the PR-014 auth suite, the PR-015 listings suite, and the PR-016 saved-listings suite. Auth coverage verifies registration success and invalid/duplicate failures, login success and failure, session isolation, and protected-page redirects. The PR-012 checks cover all ten protected API endpoints without a session. The listings suite verifies creation/validation, persisted owner edits, owner deletion, non-owner rejection, and missing/deleted listings, including database state after successful and rejected mutations. These suites reuse the response assertions in `tests/helpers/contract.helper.js`. The saved-listings suite verifies save persistence, user isolation, duplicate/self-save rejection, idempotent unsave and re-save, and deletion cleanup across multiple users. It checks stored rows directly as well as both saved-results endpoints, including preservation of unrelated saves.
 
 Run the focused auth cases together with their shared contract checks:
 
@@ -290,11 +320,25 @@ Run `npm test` twice consecutively to verify repeatability against the same isol
 
 ---
 
-## 📘 API Contract Cleanup (PR-012)
+## API summary
 
-Core API contracts are now documented in:
+The API uses JSON and cookie-based sessions. In brief:
 
-- `docs/api-contract.md`
+- Auth: `POST /api/register` (201), `POST /api/login` (200),
+  `GET /api/me` (200), and `POST /api/logout` (200).
+- Listings: public `GET /api/listings` (200); authenticated
+  `POST /api/listings` (201); owner-only `PATCH` and `DELETE /api/listings/:postid` (200).
+- Saves: `POST /api/listings/:postid/save` (201),
+  `DELETE /api/listings/:postid/save` (200, idempotent for an existing listing),
+  `GET /api/saved-listings`, and `GET /api/saved-listing-ids` (200).
+- Profile/preferences: `GET /api/user-data` and `POST /api/update-preferences` (200).
+- Database check: `GET /api/health/db` (200).
+
+Protected APIs return 401 without a session; non-owner edits/deletes return 403,
+missing listings return 404, duplicate saves return 409, and self-saves return 400.
+Create/edit validation failures return 400. Full payloads and error cases are in:
+
+- [API contract](docs/api-contract.md)
 
 All successful API responses use `{ "data": ... }`; errors use `{ "error": "..." }`. Read success payloads from `body.data`, including the listings array. Duplicate registration returns `409`. The bundled frontend is updated for this contract; external clients must migrate their success-payload readers. See the API contract for endpoint payloads, status codes, and migration details.
 
@@ -345,17 +389,25 @@ For both environments:
 
 ## 🧪 Listing Validation Hardening (PR-010) Manual API Tests
 
-Use these examples to verify deterministic `400` validation behavior for listing create/edit payloads.
+<details>
+<summary>Optional Bash/curl checks for listing validation</summary>
+
+Use Bash (or Git Bash on Windows) for these examples. After seeding the demo,
+log in as Alex and save the session cookie before running the validation checks.
 
 ```bash
 BASE=http://localhost:3000/api
 OWNER_COOKIE=owner-cookies.txt
+curl -i -X POST "$BASE/login" \
+  -c "$OWNER_COOKIE" \
+  -H "Content-Type: application/json" \
+  -d '{"netid":"demo1@rutgers.edu","password":"DemoPass1!"}'
 ```
 
 For PATCH tests, first create a valid listing, copy the returned `postid`, then set:
 
 ```bash
-VALID_POSTID=<returned_postid>
+VALID_POSTID=123 # Replace 123 with the postid returned when you create a listing.
 ```
 
 ### Negative tests
@@ -441,3 +493,5 @@ curl -i -X PATCH "$BASE/listings/$VALID_POSTID" \
   -H "Content-Type: application/json" \
   -d '{"campus":"Livingston","numrooms":2}'
 ```
+
+</details>
