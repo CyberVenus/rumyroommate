@@ -9,9 +9,9 @@ This roadmap records implementation status verified against the current reposito
 
 ## Overall Progress
 
-- **Verified complete:** 15 of 19 planned PR items
-- **Completed milestones:** M1 — Core Feature Complete; M2 — Reliability Complete
-- **Remaining focus:** Comprehensive API test suites, reproducible demo data, portfolio documentation, and deployment guidance
+- **Verified complete:** 16 of 19 planned PR items
+- **Completed milestones:** M1 — Core Feature Complete; M2 — Reliability Complete; M3 — Quality Gate Complete
+- **Remaining focus:** Reproducible demo data, portfolio documentation, and deployment guidance
 
 ## Foundation
 
@@ -46,9 +46,9 @@ This roadmap records implementation status verified against the current reposito
 - [x] **PR-013 — Test harness and scripts.** Jest/Supertest scripts, isolated-test safeguards, lifecycle setup, and shared auth helpers are present.
 - [x] **PR-014 — Auth API tests.** Registration success, invalid/duplicate registration, login success/failure, and session gating are verified using the PR-013 harness and shared PR-012 contract assertions. All 45 tests across four suites passed in two consecutive full runs, including checks for all ten protected API endpoints without a session.
 - [x] **PR-015 — Listings API tests.** The owner-lifecycle suite reuses shared auth/session and response-contract helpers to verify creation success/validation failures, persisted partial owner edits, non-owner edit/delete `403` responses, owner deletion, and missing/already-deleted listing `404` responses. Database assertions verify successful mutations and unchanged state after rejected requests. All 66 tests across five suites passed in two consecutive full runs, including 21 listing lifecycle cases.
-- [ ] **PR-016 — Saved listings API tests.** No automated save/unsave/delete-cleanup suite was found.
+- [x] **PR-016 — Saved listings API tests.** Five lifecycle cases verify save persistence and user isolation, duplicate-save `409`, self-save `400`, idempotent unsave and re-save, and owner-deletion cleanup across multiple users. Direct database assertions verify dependent saved rows are removed and unrelated saves survive; both saved-results endpoints reflect cleanup. All 71 tests across six suites passed in two consecutive full runs against the isolated MySQL test database.
 
-**M3 Quality Gate Complete (PR-016): not reached.** The saved-listings lifecycle suite remains incomplete.
+**M3 Quality Gate Complete (PR-016): reached.** PR-013 through PR-016 are verified.
 
 ## Portfolio and Deployment Readiness
 
