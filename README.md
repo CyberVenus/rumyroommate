@@ -24,8 +24,9 @@ locally stored bcrypt password hashes; the server accepts general email syntax.
 server session. “Forgot Password?” is a placeholder with no recovery flow.
 
 The app uses Express's in-memory session store. Restarting clears sessions.
-Deployment guidance is still tracked separately as PR-019; this README describes
-local evaluation, not a completed production deployment.
+The [deployment runbook](docs/deployment.md) covers release preparation,
+environment variables, migrations, smoke checks, and recovery. It identifies
+unresolved production prerequisites; no completed production deployment is claimed.
 
 ## Reviewer quick tour
 
@@ -79,6 +80,7 @@ is in `src/config/db.js`. Jest and Supertest exercise the real app with MySQL.
 - [Verified roadmap](docs/roadmap.md)
 - [Original scope and acceptance criteria](docs/planning/mvp-tracking-board.md)
 - [Detailed API contract](docs/api-contract.md)
+- [Deployment runbook and release gates](docs/deployment.md)
 
 ## ▶ Runtime Entrypoint (Canonical)
 
@@ -157,8 +159,12 @@ the password. These commands work in PowerShell and Bash. The schema creates/use
 
 Run migrations **in filename order**:
 
+First inspect schema state using the [deployment migration procedure](docs/deployment.md#4-prepare-the-database).
+The checked-in base schema already contains migration 001's result: **skip 001
+after importing that schema**. For an existing database, apply only missing
+migrations; never include the 004 rollback in the forward sequence.
+
 ```bash
-mysql -h 127.0.0.1 -P 3306 -u YOUR_DB_USER -p --execute="source database/migrations/001_cleanup_userpreferences_legacy_columns.sql"
 mysql -h 127.0.0.1 -P 3306 -u YOUR_DB_USER -p --execute="source database/migrations/002_make_listing_preferenceids_nullable.sql"
 mysql -h 127.0.0.1 -P 3306 -u YOUR_DB_USER -p --execute="source database/migrations/003_make_savedroommatelistings_saveid_autoincrement.sql"
 mysql -h 127.0.0.1 -P 3306 -u YOUR_DB_USER -p --execute="source database/migrations/004_set_saved_postid_on_delete_cascade.sql"
@@ -278,15 +284,16 @@ node -e "require('fs').copyFileSync('.env.test.example', '.env.test', require('f
 3. Ensure `DB_NAME` points to an isolated test database (for example: `rumyroommate_test`).
 
 4. Initialize a fresh test database by generating a local SQL copy that changes
-   the hard-coded database name in both the schema and the four migrations:
+   the hard-coded database name in the schema and the three pending migrations:
 
 ```bash
-node -e "const fs=require('fs'); const files=['database/schema.sql',...['001_cleanup_userpreferences_legacy_columns','002_make_listing_preferenceids_nullable','003_make_savedroommatelistings_saveid_autoincrement','004_set_saved_postid_on_delete_cascade'].map(n=>'database/migrations/'+n+'.sql')]; fs.writeFileSync('database/schema.test.sql',files.map(p=>fs.readFileSync(p,'utf8').replaceAll('rumyroommate','rumyroommate_test')).join('\n'))"
+node -e "const fs=require('fs'); const files=['database/schema.sql',...['002_make_listing_preferenceids_nullable','003_make_savedroommatelistings_saveid_autoincrement','004_set_saved_postid_on_delete_cascade'].map(n=>'database/migrations/'+n+'.sql')]; fs.writeFileSync('database/schema.test.sql',files.map(p=>fs.readFileSync(p,'utf8').replaceAll('rumyroommate','rumyroommate_test')).join('\n'))"
 mysql -h 127.0.0.1 -P 3306 -u YOUR_DB_USER -p --execute="source database/schema.test.sql"
 ```
 
-Use `DB_NAME=rumyroommate_test` in `.env.test` for these commands. The generated
-`database/schema.test.sql` is gitignored. Passing a test database name to the
+Use `DB_NAME=rumyroommate_test` in `.env.test` for these commands. Migration 001
+is omitted because the current base schema already lacks those legacy columns.
+The generated `database/schema.test.sql` is gitignored. Passing a test database name to the
 MySQL client alone is insufficient: the original SQL contains explicit USE
 statements. Only import this generated file into a disposable test environment.
 Do not run tests while using that same database for an interactive demo; tests
